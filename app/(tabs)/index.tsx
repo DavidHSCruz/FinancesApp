@@ -1,75 +1,113 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import DonutChart from "@/components/GraficoDonut/DonutChart"
+import { MenuAddButton } from "@/components/MenuAddButton/MenuAddButton"
+import { colors } from "@/constants/colors"
+import { IFinanceItem } from "@/types/Item"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useEffect, useState } from "react"
+import { Dimensions, InteractionManager, StyleSheet, Text, View } from "react-native"
+interface DataItem {
+  tipo: string;
+  items: IFinanceItem[];
+}
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const CHAVES_STORAGE = {
+  RENDA: '@finance:items:renda',
+  DESPESAS: '@finance:items:despesas',
+  INVESTIMENTOS: '@finance:items:investimentos'
+} as const
 
-export default function HomeScreen() {
+const carregarItensStorage = async (chaves: string[]) => {
+  const itensArmazenados = await AsyncStorage.multiGet(chaves)
+  return itensArmazenados.map(([chave, valor]) => ({
+    tipo: chave.replace('@finance:items:', ''),
+    items: JSON.parse(valor || '[]')
+  }))
+}
+
+const formatarDados = (itens: DataItem[]): Record<string, IFinanceItem[]> => {
+  return itens.reduce((acumulador, item) => ({
+    ...acumulador,
+    [item.tipo]: item.items
+  }), {})
+}
+
+export default function Index() {
+  const [isModalAddHidden, setIsModalAddHidden] = useState(true)
+  const [items, setItems] = useState<Record<string, IFinanceItem[]>>({})
+  const screenWidth = Dimensions.get('window').width
+  
+  useEffect(() => {
+  const carregarItens = async () => {
+    try {
+      const chavesStorage = Object.values(CHAVES_STORAGE)
+      const itensCarregados = await carregarItensStorage(chavesStorage)
+      const dadosFormatados = formatarDados(itensCarregados)
+      
+      InteractionManager.runAfterInteractions(() => {
+        setItems(dadosFormatados)
+      })
+    } catch (erro) {
+      console.error('Erro ao carregar itens:', erro)
+    }
+  }
+
+  carregarItens()
+}, [])
+
+const CORES_POR_TIPO = {
+  renda: colors.renda,
+  investimentos: colors.investimento,
+  despesas: colors.despesa
+} as const
+
+const calcularSomaPorTipo = (items: IFinanceItem[]) => {
+  const valor =  items?.reduce((total, item) => total + parseFloat(item.value.toString()), 0) ?? 0
+  return valor
+}
+
+const calcularSaldo = (items: Record<string, IFinanceItem[]>) => {
+    const renda = calcularSomaPorTipo(items['renda'] || [])
+    const despesas = calcularSomaPorTipo(items['despesas'] || [])
+    const investimentos = calcularSomaPorTipo(items['investimentos'] || [])
+    return renda - despesas - investimentos
+  }
+
+function formatarBRL(valor: number): string {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+const formatarDadosGrafico = (items: Record<string, IFinanceItem[]>) => {
+  return Object.entries(items).map(([tipo, itens]) => ({
+    name: tipo,
+    value: calcularSomaPorTipo(itens),
+    valueReais: formatarBRL(calcularSomaPorTipo(itens)),
+    color: CORES_POR_TIPO[tipo as keyof typeof CORES_POR_TIPO],
+  }))
+}
+
+const dados = formatarDadosGrafico(items)
+const saldo = calcularSaldo(items)
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+    <View style={styles.container}>
+      <View>
+        <Text style={styles.text}>{`Saldo = ${formatarBRL(saldo)}`}</Text>
+      </View>
+      <DonutChart data={dados}/>
+      <MenuAddButton onPress={() => setIsModalAddHidden(!isModalAddHidden)} hiddenModal={isModalAddHidden} />
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: colors.bg1,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+  text: {
+    color: colors.text,
+    padding: 20,
+  }
+})
