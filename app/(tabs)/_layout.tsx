@@ -18,9 +18,11 @@ export default function RootLayout() {
         borderColor: 'transparent',
       height: 60,
       },
-     }}>
+     }}
+     >
       <Tabs.Screen name="index" options={{ 
         title: "Resumo",
+        headerShown: false,
         tabBarIcon: ({color}) => (
           <Ionicons
             name="book"

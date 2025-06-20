@@ -4,10 +4,10 @@ import { colors } from "@/constants/colors"
 import { IFinanceItem } from "@/types/Item"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useEffect, useState } from "react"
-import { Dimensions, InteractionManager, StyleSheet, Text, View } from "react-native"
+import { InteractionManager, StyleSheet, Text, View } from "react-native"
 interface DataItem {
-  tipo: string;
-  items: IFinanceItem[];
+  tipo: string
+  items: IFinanceItem[]
 }
 
 const CHAVES_STORAGE = {
@@ -34,7 +34,6 @@ const formatarDados = (itens: DataItem[]): Record<string, IFinanceItem[]> => {
 export default function Index() {
   const [isModalAddHidden, setIsModalAddHidden] = useState(true)
   const [items, setItems] = useState<Record<string, IFinanceItem[]>>({})
-  const screenWidth = Dimensions.get('window').width
   
   useEffect(() => {
   const carregarItens = async () => {
@@ -90,10 +89,14 @@ const saldo = calcularSaldo(items)
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text style={styles.text}>{`Saldo = ${formatarBRL(saldo)}`}</Text>
+      <View style={styles.containerSaldo}>
+        <Text style={styles.saldo}>{`Saldo = ${formatarBRL(saldo)}`}</Text>
+        <View style={{position: 'relative', width: '100%', alignItems: 'center'}}>
+          <View style={styles.containerResumo}>
+            <DonutChart data={dados}/>
+          </View>
+        </View>
       </View>
-      <DonutChart data={dados}/>
       <MenuAddButton onPress={() => setIsModalAddHidden(!isModalAddHidden)} hiddenModal={isModalAddHidden} />
     </View>
   )
@@ -103,11 +106,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bg1,
+  },
+  containerSaldo: {
+    backgroundColor: colors.primary,
+    height: 120,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    alignItems: "center",
+  },
+  saldo: {
+    color: colors.text,
+    paddingBottom: 20,
+    paddingTop: 30,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  containerResumo: {
+    backgroundColor: colors.bg1,
+    position: "absolute",
+    padding: 20,
+    borderRadius: 20,
+    width: "90%",
     alignItems: "center",
     justifyContent: "center",
-  },
-  text: {
-    color: colors.text,
-    padding: 20,
+    boxShadow: "0px 2px 15px rgba(0, 0, 0, 0.30)",
   }
 })

@@ -4,6 +4,7 @@ import { FlatList, NativeSyntheticEvent, Pressable, StyleSheet, Text, TextInput,
 import { IFinanceItem } from "@/types/Item"
 import addNewItem from "@/hooks/useAddItem"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import Card from "@/components/Card/Card"
 
 export default function Renda() {
   const tipoDeItem = "renda"
@@ -52,11 +53,7 @@ export default function Renda() {
         data={items}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text style={styles.itemText}>{item.date}</Text>
-            <Text style={styles.itemText}>{item.nome}</Text>
-            <Text style={styles.itemText}>{item.value}</Text>
-          </View>
+            <Card item={item} />
         )}
       />
       <View style={styles.inputContainer}>
@@ -100,18 +97,6 @@ const styles = StyleSheet.create({
     padding: 20,
     fontSize: 24,
     fontWeight: "bold",
-  },
-  item: {
-    backgroundColor: colors.renda,
-    width: "100%",
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 5,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  itemText: {
-    color: colors.text,
   },
   addButton: {
     backgroundColor: colors.renda,
