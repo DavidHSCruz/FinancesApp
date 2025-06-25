@@ -3,7 +3,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function addNewItem(items: IFinanceItem[], setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, newItem: IFinanceItem, tipoDeItem: string) {
   const ultimoID = items[items.length -1].id
-  
   let item: IFinanceItem = {
     id: ultimoID + 1,
     date: newItem.date,
@@ -12,7 +11,7 @@ export default function addNewItem(items: IFinanceItem[], setItems: React.Dispat
   }
   const [dia,mes] = item.date.split('/')
 
-  if (parseInt(mes) > 12 || parseInt(dia) > 31) {
+  if (parseInt(mes) > 12 || parseInt(dia) > 31 || dia === undefined || mes === undefined) {
     alert('Data inválida')
     return
   }
@@ -25,7 +24,7 @@ export default function addNewItem(items: IFinanceItem[], setItems: React.Dispat
     return
   }
 
-  item.date = `${dia}-${mes}`
+  item.date = `${dia}/${mes}`
   item.value = Number(item.value.toString().replace(/\./g, '').replace(',', '.'))
 
   const newList = [...items, item]

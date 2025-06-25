@@ -1,10 +1,11 @@
-import { colors } from "@/constants/colors"
-import { useState, useEffect } from "react"
-import { FlatList, NativeSyntheticEvent, Pressable, StyleSheet, Text, TextInput, TextInputChangeEventData, View } from "react-native"
-import { IFinanceItem } from "@/types/Item"
-import addNewItem from "@/hooks/useAddItem"
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import Card from "@/components/Card/Card"
+import { InputList } from "@/components/InputList/InputList"
+import { colors } from "@/constants/colors"
+import addNewItem from "@/hooks/useAddItem"
+import { IFinanceItem } from "@/types/Item"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useEffect, useState } from "react"
+import { FlatList, StyleSheet, Text, View } from "react-native"
 
 export default function Renda() {
   const tipoDeItem = "renda"
@@ -25,28 +26,6 @@ export default function Renda() {
   loadItems()
 }, [])
 
-  function handleChange(value: string | number, key: keyof IFinanceItem) {
-    setNewItem({ ...newItem, [key]: value, })
-  }
-
-  function handleChangeDate(e: NativeSyntheticEvent<TextInputChangeEventData>) {
-    const date = e.nativeEvent.text.replace(/[^0-9]/g, '')
-    let formatDate = date
-    if (date.length > 1) formatDate = date.replace(/(\d{2})(\d{1,2})/, '$1/$2')
-
-    handleChange(formatDate, 'date')
-  }
-
-  function handleChangeValue(e: NativeSyntheticEvent<TextInputChangeEventData>) {
-    const value = e.nativeEvent.text.replace(/[^0-9]/g, '')
-    let formatValue = value
-
-    formatValue = formatValue.replace(/(\d{1,})(\d{2})$/, '$1,$2')
-    formatValue = formatValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
-
-    handleChange(formatValue, 'value')
-  }
-
   return (
     <View style={styles.containerBG}>
       <FlatList
@@ -56,17 +35,13 @@ export default function Renda() {
             <Card item={item} items={items} setItems={setItems} tipoDeItem={tipoDeItem} />
         )}
       />
-      <View style={styles.inputContainer}>
-        <TextInput style={styles.input} keyboardType="numeric" placeholderTextColor={colors.placeholder} placeholder="00/00" maxLength={5} onChange={handleChangeDate} value={newItem.date} />
-        <TextInput style={[styles.input, {flex: 4}]} placeholderTextColor={colors.placeholder} placeholder="Nome" onChange={e => handleChange(e.nativeEvent.text, 'nome')} value={newItem.nome} />
-        <TextInput style={styles.input} keyboardType="numeric" placeholderTextColor={colors.placeholder} placeholder="Valor" onChange={handleChangeValue} value={newItem.value.toString()} />
-        <Pressable 
-          style={styles.addButton} 
-          onPress={() => addNewItem(items, setItems, newItem, tipoDeItem)}
-        >
-          <Text style={styles.buttonText}>+</Text>
-        </Pressable>
-      </View>
+      <InputList 
+        action={() => addNewItem(items, setItems, newItem, tipoDeItem)} 
+        corTipo={colors.renda}
+        item={newItem} 
+        setItem={setNewItem}>
+        <Text style={styles.buttonText}>+</Text>
+      </InputList>
     </View>
   )
 }

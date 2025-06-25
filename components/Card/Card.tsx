@@ -11,6 +11,7 @@ import Reanimated, { SharedValue, useAnimatedStyle } from "react-native-reanimat
 import { styles } from "./stylesCard"
 import deleteItem from "@/hooks/useDeleteItem"
 import editItem from "@/hooks/useEditItem"
+import { TextInput } from "react-native-gesture-handler"
 
 function RightAction(prog: SharedValue<number>, drag: SharedValue<number>, newItem: IFinanceItem, items: IFinanceItem[], setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, tipoDeItem: string) {
     const styleAnimation = useAnimatedStyle(() => {
