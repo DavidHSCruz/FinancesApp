@@ -1,9 +1,11 @@
 import { IFinanceItem } from "@/types/Item"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
-export default async function addNewItem(items: IFinanceItem[], setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, newItem: IFinanceItem, tipoDeItem: string) {
+export default function addNewItem(items: IFinanceItem[], setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, newItem: IFinanceItem, tipoDeItem: string) {
+  const ultimoID = items[items.length -1].id
+  
   let item: IFinanceItem = {
-    id: items.length + 1,
+    id: ultimoID + 1,
     date: newItem.date,
     nome: newItem.nome,
     value: newItem.value,
@@ -24,8 +26,10 @@ export default async function addNewItem(items: IFinanceItem[], setItems: React.
   }
 
   item.date = `${dia}-${mes}`
-
   item.value = Number(item.value.toString().replace(/\./g, '').replace(',', '.'))
-  setItems([...items, item])
-  AsyncStorage.setItem(`@finance:items:${tipoDeItem}`, JSON.stringify([...items, item]))
+
+  const newList = [...items, item]
+  
+  setItems(newList)
+  AsyncStorage.setItem(`@finance:items:${tipoDeItem}`, JSON.stringify(newList))
 }

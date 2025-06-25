@@ -9,4 +9,6 @@ export const colors = {
     renda: '#16a116',
     despesa: '#db3513',
     investimento: '#1357df',
+    actionRed: '#e3401c',
+    actionOrange: '#e3801c',
 }

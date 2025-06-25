@@ -53,7 +53,7 @@ export default function Renda() {
         data={items}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-            <Card item={item} />
+            <Card item={item} items={items} setItems={setItems} tipoDeItem={tipoDeItem} />
         )}
       />
       <View style={styles.inputContainer}>
