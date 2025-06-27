@@ -130,6 +130,10 @@ const styles = StyleSheet.create({
     width: "90%",
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0px 2px 15px rgba(0, 0, 0, 0.30)",
+    
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
   }
 })

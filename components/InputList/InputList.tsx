@@ -3,8 +3,15 @@ import { IFinanceItem } from "@/types/Item"
 import { NativeSyntheticEvent, Pressable, TextInput, TextInputChangeEventData, View } from "react-native"
 import { styles } from "./styles"
 
+interface IInputListProps {
+  action: () => void
+  corTipo: string
+  item: IFinanceItem
+  setItem: React.Dispatch<React.SetStateAction<IFinanceItem>>
+  children: React.ReactNode
+}
 
-export const InputList = ({ action, corTipo, item, setItem, children }: { action: () => void, corTipo: string, item: IFinanceItem, setItem: React.Dispatch<React.SetStateAction<IFinanceItem>>, children: React.ReactNode }) => {
+export const InputList = ({ action, corTipo, item, setItem, children }: IInputListProps) => {
 
     function handleChange(value: string | number, key: keyof IFinanceItem) {
         setItem({ ...item, [key]: value, })

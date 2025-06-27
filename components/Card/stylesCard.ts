@@ -1,5 +1,7 @@
 import { colors } from "@/constants/colors"
-import { StyleSheet } from "react-native"
+import { Dimensions, StyleSheet } from "react-native"
+
+const { width: w, height: h }= Dimensions.get("window")
 
 
 export const styles = StyleSheet.create({
@@ -31,6 +33,22 @@ export const styles = StyleSheet.create({
         flex: 1,
         width: 80,
         height: '100%',
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    containerModalEdit: {
+        width: w,
+        height: h,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 10,
+    },
+    ModalEdit: {
+        width: '100%',
+        height: 100,
+        backgroundColor: '#0008',
+        borderRadius: 5,
+        padding: 10,
         justifyContent: "center",
         alignItems: "center",
     },

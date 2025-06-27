@@ -27,22 +27,31 @@ export default function Renda() {
 }, [])
 
   return (
-    <View style={styles.containerBG}>
-      <FlatList
-        data={items}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-            <Card item={item} items={items} setItems={setItems} tipoDeItem={tipoDeItem} />
-        )}
-      />
-      <InputList 
-        action={() => addNewItem(items, setItems, newItem, tipoDeItem)} 
-        corTipo={colors.renda}
-        item={newItem} 
-        setItem={setNewItem}>
-        <Text style={styles.buttonText}>+</Text>
-      </InputList>
-    </View>
+    <>
+      <View style={styles.containerBG}>
+        <FlatList
+          data={items}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+              <Card 
+                item={item}
+                newItem={newItem}
+                setItem={setNewItem}
+                items={items} 
+                setItems={setItems} 
+                tipoDeItem={tipoDeItem} 
+              />
+          )}
+        />
+        <InputList 
+          action={() => addNewItem(items, setItems, newItem, tipoDeItem)} 
+          corTipo={colors.renda}
+          item={newItem} 
+          setItem={setNewItem}>
+          <Text style={styles.buttonText}>+</Text>
+        </InputList>
+      </View>
+    </>
   )
 }
 

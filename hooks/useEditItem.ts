@@ -2,27 +2,21 @@ import { IFinanceItem } from "@/types/Item"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function editItem(
+  item: IFinanceItem,
   items: IFinanceItem[], 
   setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, 
-  selectItem: IFinanceItem, 
   editItem: IFinanceItem,
   tipoDeItem: string
 ){
-  const item: IFinanceItem = {
-    id: selectItem.id,
-    date: selectItem.date,
-    nome: selectItem.nome,
-    value: selectItem.value,
-  }
   const itemEditado: IFinanceItem = {
-    id: selectItem.id,
-    date: item.date,
-    nome: item.nome,
-    value: item.value,
+    id: item.id,
+    date: editItem.date,
+    nome: editItem.nome,
+    value: editItem.value,
   }
 
-  const id = item.id
-  const newList = items.filter((item) => item.id !== id)
+  const id = itemEditado.id
+  const newList = items.map((item) => item.id === id ? itemEditado : item)
 
   setItems(newList)
   AsyncStorage.setItem(`@finance:items:${tipoDeItem}`, JSON.stringify(newList))
