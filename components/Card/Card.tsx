@@ -10,9 +10,20 @@ import Reanimated, { SharedValue, useAnimatedStyle } from "react-native-reanimat
 
 import deleteItem from "@/hooks/useDeleteItem"
 import editItem from "@/hooks/useEditItem"
+import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { InputList } from "../InputList/InputList"
-import { styles } from "./stylesCard"
+import { styles } from "./styles"
+
+interface CardProps { 
+    item: IFinanceItem, 
+    newItem: IFinanceItem, 
+    setItem: React.Dispatch<React.SetStateAction<IFinanceItem>>, 
+    items: IFinanceItem[], 
+    setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, 
+    tipoDeItem: string,
+    cor: string,
+}
 
 function RightAction(
     prog: SharedValue<number>, 
@@ -51,7 +62,12 @@ function RightAction(
                             borderBottomRightRadius: 5,
                             backgroundColor: colors.actionRed,
                         }
-                    ]} onPress={() => deleteItem(items, setItems, item, tipoDeItem)}>
+                    ]} onPress={() => deleteItem(
+                                        items, 
+                                        setItems, 
+                                        item, 
+                                        tipoDeItem
+                                    )}>
                     <Ionicons name="trash" size={20} color={colors.secondary} />
                 </Pressable>
             </View>
@@ -59,22 +75,23 @@ function RightAction(
     )
 }
 
-function Card({ item, newItem, setItem, items, setItems, tipoDeItem }: { item: IFinanceItem, newItem: IFinanceItem, setItem: React.Dispatch<React.SetStateAction<IFinanceItem>>, items: IFinanceItem[], setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, tipoDeItem: string }) {
+function Card({ 
+    item, 
+    newItem, 
+    setItem, 
+    items, 
+    setItems, 
+    tipoDeItem,
+    cor 
+}: CardProps) {
     const [aberto, setAberto] = useState(false)
     const [editModalVisible, setEditModalVisible] = useState(false)
-
-    function valorFormatadoBR(value: number) {
-        return value.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        })
-    }
 
     return (
         <>
             <Swipeable
                 containerStyle={[styles.swipeable, {
-                    backgroundColor: aberto ? colors.placeholder : colors.renda,
+                    backgroundColor: aberto ? colors.placeholder : cor,
                 }]}
                 friction={2}
                 enableTrackpadTwoFingerGesture
@@ -85,7 +102,15 @@ function Card({ item, newItem, setItem, items, setItems, tipoDeItem }: { item: I
                 onSwipeableClose={() => {
                     setAberto(false)
                 }}
-                renderRightActions={(prog, drag) => RightAction(prog, drag, item, items, setItems, tipoDeItem, setEditModalVisible)}
+                renderRightActions={(prog, drag) => RightAction(
+                                                        prog, 
+                                                        drag, 
+                                                        item, 
+                                                        items, 
+                                                        setItems, 
+                                                        tipoDeItem, 
+                                                        setEditModalVisible
+                                                    )}
                 overshootRight={false}
             >
                 <View style={styles.item}>
@@ -106,7 +131,13 @@ function Card({ item, newItem, setItem, items, setItems, tipoDeItem }: { item: I
                             <View style={styles.ModalEdit}>
                                 <InputList
                                     action={() => {
-                                        editItem(item, items, setItems, newItem, tipoDeItem)
+                                        editItem(
+                                            item, 
+                                            items, 
+                                            setItems, 
+                                            newItem, 
+                                            tipoDeItem
+                                        )
                                         setEditModalVisible(false)
                                     }} 
                                     corTipo={colors.placeholder}

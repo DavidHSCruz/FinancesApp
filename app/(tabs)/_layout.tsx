@@ -31,7 +31,7 @@ export default function RootLayout() {
           />
         ),
       }} />
-      <Tabs.Screen name="renda" options={{ 
+      <Tabs.Screen name="renda/index" options={{ 
         title: "Renda",
         tabBarIcon: ({color, focused}) => (
           <Ionicons
@@ -41,7 +41,7 @@ export default function RootLayout() {
           />
         )
       }} />
-      <Tabs.Screen name="despesas" options={{ 
+      <Tabs.Screen name="despesas/index" options={{ 
         title: "Despesas",
         tabBarIcon: ({color, focused}) => (
           <Ionicons
@@ -51,7 +51,7 @@ export default function RootLayout() {
           />
         )
       }} />
-      <Tabs.Screen name="investimentos" options={{ 
+      <Tabs.Screen name="investimentos/index" options={{ 
         title: "Investimentos",
         tabBarIcon: ({color, focused}) => (
           <Ionicons

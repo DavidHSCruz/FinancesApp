@@ -5,10 +5,27 @@ import addNewItem from "@/hooks/useAddItem"
 import { IFinanceItem } from "@/types/Item"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useEffect, useState } from "react"
-import { FlatList, StyleSheet, Text, View } from "react-native"
+import { FlatList, Text, View } from "react-native"
+import { styles } from "./styles"
 
-export default function Renda() {
-  const tipoDeItem = "renda"
+type TipoDeItemProps = 'renda' | 'despesa' | 'investimento'
+
+
+function selectColor(tipoDeItem: TipoDeItemProps) {
+  switch (tipoDeItem) {
+    case 'renda':
+      return colors.renda
+    case 'despesa':
+      return colors.despesa
+    case 'investimento':
+      return colors.investimento
+  }
+}
+
+export default function Despesas() {
+  const tipoDeItem: TipoDeItemProps = "despesa"
+  const cor = selectColor(tipoDeItem)
+  
   const [items, setItems] = useState<IFinanceItem[]>([])
   const [newItem, setNewItem] = useState<IFinanceItem>({
     id: 0,
@@ -27,8 +44,8 @@ export default function Renda() {
 }, [])
 
   return (
-    <>
-      <View style={styles.containerBG}>
+    <View style={styles.containerBG}>
+      <View style={styles.container}>
         <FlatList
           data={items}
           keyExtractor={(item) => item.id.toString()}
@@ -39,56 +56,19 @@ export default function Renda() {
                 setItem={setNewItem}
                 items={items} 
                 setItems={setItems} 
-                tipoDeItem={tipoDeItem} 
+                tipoDeItem={tipoDeItem}
+                cor={cor}
               />
           )}
         />
         <InputList 
           action={() => addNewItem(items, setItems, newItem, tipoDeItem)} 
-          corTipo={colors.renda}
+          corTipo={cor}
           item={newItem} 
           setItem={setNewItem}>
           <Text style={styles.buttonText}>+</Text>
         </InputList>
       </View>
-    </>
+    </View>
   )
 }
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    flexDirection: "row",
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  input: {
-    flex: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.renda,
-    color: colors.text,
-    paddingHorizontal: 10,
-    marginRight: 10
-  },
-  containerBG: {
-    padding: 20,
-    height: "100%",
-    backgroundColor: colors.bg1,
-  },
-  title: {
-    color: colors.text,
-    padding: 20,
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  addButton: {
-    backgroundColor: colors.renda,
-    borderRadius: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-  },
-  buttonText: {
-    color: colors.text,
-  },
-})

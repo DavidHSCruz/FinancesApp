@@ -12,7 +12,8 @@ interface DonutChartProps {
     valueReais: string
     color: string
   }[]
-  innerRadius?: number
+  children?: React.ReactNode
+  innerRadius?: number 
   outerRadius?: number
 }
 
@@ -20,6 +21,7 @@ function DonutChart({
   width = 300,
   height = 300,
   data,
+  children,
   innerRadius = 70,
   outerRadius = 100,
 }: DonutChartProps) {
@@ -61,12 +63,12 @@ function DonutChart({
                         y={0}
                         textAnchor="middle"
                         alignmentBaseline="middle"
-                        fontSize={30}
+                        fontSize={20}
                         fontWeight="bold"
                         fill={colors.text}
-                        opacity={0.1}
+                        opacity={0.2}
                         >
-                        Total
+                        {children}
                     </SvgText>
                     <SvgText
                         x={labelX}

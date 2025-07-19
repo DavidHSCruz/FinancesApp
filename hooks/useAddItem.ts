@@ -1,4 +1,6 @@
 import { IFinanceItem } from "@/types/Item"
+import { valorFormatadoDB } from "@/utils/formatacaoNumeros"
+import { dataValidation, nomeValidation, valorValidation } from "@/utils/validacoes"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function addNewItem(
@@ -7,30 +9,25 @@ export default function addNewItem(
   newItem: IFinanceItem, 
   tipoDeItem: string
 ) {
-  const ultimoID = items[items.length -1].id
+
+  let ultimoID = 0
+  if(items.length !== 0) ultimoID = items[items.length -1].id
+  
   let item: IFinanceItem = {
-    id: ultimoID + 1,
+    id: items.length !== 0 ? ultimoID + 1 : 0,
     date: newItem.date,
     nome: newItem.nome,
     value: newItem.value,
   }
   const [dia,mes] = item.date.split('/')
 
-  if (parseInt(mes) > 12 || parseInt(dia) > 31 || dia === undefined || mes === undefined) {
-    alert('Data inválida')
-    return
-  }
-  if (item.nome === '') {
-    alert('Nome inválido')
-    return
-  }
-  if (Number(item.value) <= 0) {
-    alert('Valor inválido')
-    return
-  }
+  const data = dataValidation(dia, mes)
+  const nome = nomeValidation(item.nome)
+  const value = valorValidation(item.value.toString())
+  if (!data || !nome || !value) return
 
   item.date = `${dia}/${mes}`
-  item.value = Number(item.value.toString().replace(/\./g, '').replace(',', '.')).toFixed(2)
+  item.value = valorFormatadoDB(item.value.toString())
 
   const newList = [...items, item]
   
