@@ -1,5 +1,9 @@
 import { colors } from "@/constants/colors"
+import { useDadosValue } from "@/context/dadosContext"
 import { IFinanceItem } from "@/types/Item"
+import { Picker } from "@react-native-picker/picker"
+
+import { useState } from "react"
 import { NativeSyntheticEvent, Pressable, TextInput, TextInputChangeEventData, View } from "react-native"
 import { styles } from "./styles"
 
@@ -8,11 +12,18 @@ interface IInputListProps {
   corTipo: string
   item: IFinanceItem
   setItem: React.Dispatch<React.SetStateAction<IFinanceItem>>
+  categoria?: string
   children: React.ReactNode
 }
 
-export const InputList = ({ action, corTipo, item, setItem, children }: IInputListProps) => {
-
+export const InputList = ({ action, corTipo, item, setItem, categoria, children }: IInputListProps) => {
+    const [tipoSelecionado, setTipoSelecionado] = useState(0)
+    const dadosContext = useDadosValue()
+    if (!dadosContext) throw new Error('useDadosValue must be used within a DadosProvider')
+    const { dados } = dadosContext
+    const categoriaSelecionada = dados.categories.filter(c => c.nome === categoria)[0]
+    const categoriaItems = categoriaSelecionada.tipos
+    
     function handleChange(value: string | number, key: keyof IFinanceItem) {
         setItem({ ...item, [key]: value, })
       }
@@ -36,54 +47,77 @@ export const InputList = ({ action, corTipo, item, setItem, children }: IInputLi
         }
   
     return (
-    <View style={styles.inputContainer}>
-        <TextInput 
-            style={[
-                styles.input,
-                {
-                    borderColor: corTipo,
+    <View>
+        <View style={[
+            styles.picker,
+            {
+                borderColor: corTipo
+            }
+        ]}>
+            <Picker
+                style={{color: colors.placeholder}} 
+                selectedValue={tipoSelecionado}
+                onValueChange={(itemValue, itemIndex) => {
+                    setTipoSelecionado(itemIndex)
+                    handleChange(itemIndex, 'tipoID')
                 }
-            ]} 
-            keyboardType="numeric" 
-            placeholderTextColor={colors.placeholder} 
-            placeholder="00/00" maxLength={5} 
-            onChange={handleChangeDate} 
-            value={item.date} />
-        <TextInput 
-            style={[
-                styles.input, 
-                {
-                    borderColor: corTipo,
-                    flex: 4
+                }>
+                <Picker.Item label="Categoria..." value="" />
+                {categoriaItems.map(item => (
+                    <Picker.Item key={item.id} label={item.nome} value={item.nome} />
+                    ))
                 }
-            ]} 
-            placeholderTextColor={colors.placeholder} 
-            placeholder="Nome" 
-            onChange={e => handleChange(e.nativeEvent.text, 'nome')} 
-            value={item.nome} />
-        <TextInput 
-            style={[
-                styles.input,
-                {
-                    borderColor: corTipo,
-                }
-            ]} 
-            keyboardType="numeric" 
-            placeholderTextColor={colors.placeholder} 
-            placeholder="Valor" 
-            onChange={handleChangeValue} 
-            value={item.value.toString()} />
-        <Pressable 
-            style={[
-                styles.addButton,
-                {
-                    backgroundColor: corTipo,
-                }
-            ]} 
-            onPress={action}
-        >
-            {children}
-        </Pressable>
+            </Picker>
+        </View>
+        <View style={styles.inputContainer}>
+            <TextInput 
+                style={[
+                    styles.input,
+                    {
+                        borderColor: corTipo,
+                    }
+                ]} 
+                keyboardType="numeric" 
+                placeholderTextColor={colors.placeholder} 
+                placeholder="00/00" maxLength={5} 
+                onChange={handleChangeDate} 
+                value={item.date} />
+            <TextInput 
+                style={[
+                    styles.input, 
+                    {
+                        borderColor: corTipo,
+                        flex: 2
+                    }
+                ]} 
+                placeholderTextColor={colors.placeholder} 
+                placeholder="Nome" 
+                onChange={e => handleChange(e.nativeEvent.text, 'nome')} 
+                value={item.nome} />
+            <TextInput 
+                style={[
+                    styles.input,
+                    {
+                        borderColor: corTipo,
+                    }
+                ]} 
+                keyboardType="numeric" 
+                placeholderTextColor={colors.placeholder} 
+                placeholder="Valor" 
+                onChange={handleChangeValue} 
+                value={item.value.toString()} />
+            <Pressable 
+                style={[
+                    styles.addButton,
+                    {
+                        backgroundColor: corTipo,
+                    }
+                ]} 
+                onPress={action}
+            >
+                {children}
+            </Pressable>
+        </View>
     </View>
   )
 }

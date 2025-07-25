@@ -3,64 +3,115 @@ import DonutChart from "@/components/GraficoDonut/DonutChart"
 import { MenuAddButton } from "@/components/MenuAddButton/MenuAddButton"
 import { colors } from "@/constants/colors"
 import { useDadosValue } from "@/context/dadosContext"
+import { IDados } from "@/types/dados"
 import { IFinanceItem } from "@/types/Item"
+import { carregarDadosStorage } from "@/utils/carregaDados"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useEffect, useState } from "react"
-import { InteractionManager, StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
 interface DataItem {
   tipo: string
   items: IFinanceItem[]
 }
+
+export default function Index() {
+  const [isModalAddHidden, setIsModalAddHidden] = useState(true)
+  const { dados, setDados } = useDadosValue()
+
+//   useEffect(() => {
+//   const carregarItens = async () => {
+//     try {
+//       const chavesStorage = Object.values(CHAVES_STORAGE)
+//       const itensCarregados = await carregarItensStorage(chavesStorage)
+      
+//       InteractionManager.runAfterInteractions(() => {
+//         const [ items, categories ] = itensCarregados
+//         setDados({
+//           items: items.items || [], 
+//           categories: categories.categories || []
+//         })
+//       })
+//     } catch (erro) {
+//       console.error('Erro ao carregar itens:', erro)
+//     }
+//   }
+
+//   carregarItens()
+// }, [])
+
+// ESSE USE EFFECT É PARA CARREGAR OS DADOS INICIAIS SE CASO PERDIDOS
+// useEffect(() => {
+//   AsyncStorage.setItem('@finance:items', JSON.stringify([
+//     {
+//       id: 1,
+//       date: "2025-07-24",
+//       nome: "Salário",
+//       value: 3500,
+//       categoryID: 1,
+//       tipoID: 1
+//     },
+//     {
+//       id: 2,
+//       date: "2025-07-24",
+//       nome: "Aluguel",
+//       value: 1200,
+//       categoryID: 2,
+//       tipoID: 1
+//     },
+//     {
+//       id: 3,
+//       date: "2025-07-24",
+//       nome: "Compra de ações",
+//       value: 500,
+//       categoryID: 3,
+//       tipoID: 1
+//     }
+//   ]))
+//   AsyncStorage.setItem('@finance:categories', JSON.stringify([
+//     {
+//       id: 1,
+//       nome: "renda",
+//       tipos: [
+//         { id: 1, nome: "Salário" },
+//         { id: 2, nome: "Freelance" }
+//       ]
+//     },
+//     {
+//       id: 2,
+//       nome: "despesa",
+//       tipos: [
+//         { id: 1, nome: "Aluguel" },
+//         { id: 2, nome: "Supermercado" }
+//       ]
+//     },
+//     {
+//       id: 3,
+//       nome: "investimento",
+//       tipos: [
+//         { id: 1, nome: "Ações" },
+//         { id: 2, nome: "Fundos Imobiliários" }
+//       ]
+//     }
+//   ]))
+// }, [])
 
 const CHAVES_STORAGE = {
   ITEMS: '@finance:items',
   CATEGORIES: '@finance:categories',
 } as const
 
-const carregarItensStorage = async (chaves: string[]) => {
-  const itensArmazenados = await AsyncStorage.multiGet(chaves)
-  return itensArmazenados.map(([chave, valor]) => (
-    valor ? JSON.parse(valor) : null
-  ))
+async function carregarDados() {
+    const valoresStorage = Object.values(CHAVES_STORAGE)
+    const itensCarregados = await carregarDadosStorage(valoresStorage)
+    const [ items, categories ] = itensCarregados
+    setDados({
+        items: items || [],
+        categories: categories || []
+    })
 }
 
-const formatarDados = (itens: DataItem[]): Record<string, IFinanceItem[]> => {
-  return itens.reduce((acumulador, item) => ({
-    ...acumulador,
-    [item.tipo]: item.items
-  }), {})
-}
-
-export default function Index() {
-  const [isModalAddHidden, setIsModalAddHidden] = useState(true)
-  const [items, setItems] = useState<Record<string, IFinanceItem[]>>({})
-  const dadosContext = useDadosValue()
-  if (!dadosContext) throw new Error('useDadosValue must be used within a DadosProvider')
-  const { dados, setDados } = dadosContext
-
-  useEffect(() => {
-  const carregarItens = async () => {
-    try {
-      const chavesStorage = Object.values(CHAVES_STORAGE)
-      const itensCarregados = await carregarItensStorage(chavesStorage)
-      const dadosFormatados = formatarDados(itensCarregados)
-      
-      InteractionManager.runAfterInteractions(() => {
-        //setItems(dadosFormatados)
-
-        const [ items, categories ] = itensCarregados
-        setDados({
-          items: items.items || [], 
-          categories: categories.categories || []
-        })
-        console.log(JSON.stringify(dados, null, 2))
-      })
-    } catch (erro) {
-      console.error('Erro ao carregar itens:', erro)
-    }
-  }
-
-  carregarItens()
+useEffect(() => {
+  carregarDados()
 }, [])
 
 const CORES_POR_TIPO = {
@@ -69,45 +120,76 @@ const CORES_POR_TIPO = {
   despesa: colors.despesa
 } as const
 
-const calcularSomaPorTipo = (items: IFinanceItem[]) => {
-  const valor =  items?.reduce((total, item) => total + parseFloat(item.value.toString()), 0) ?? 0
-  return valor
-}
+const calcularSaldo = (dados: any) => {
+  const { renda, investimento, despesa } = dados
 
-const calcularSaldo = (items: Record<string, IFinanceItem[]>) => {
-    const renda = calcularSomaPorTipo(items['renda'] || [])
-    const despesa = calcularSomaPorTipo(items['despesa'] || [])
-    const investimento = calcularSomaPorTipo(items['investimento'] || [])
-    return renda - despesa - investimento
-  }
+  return renda - (despesa + investimento)
+}
 
 function formatarBRL(valor: number): string {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
-const formatarDadosGrafico = (items: Record<string, IFinanceItem[]>) => {
-  const valoresUtilizados = Object.entries(items).filter(([tipo]) => tipo !== 'renda')
-  return valoresUtilizados.map(([tipo, itens]) => ({
+function somarValores (itens: DataItem[]): Record<string, IFinanceItem[]> {
+  return itens.reduce((acumulador, item) => {
+    const somaValores = item.items.reduce((total, item) => total + parseFloat(item.value.toString()), 0)
+    return {
+      ...acumulador,
+      [item.tipo]: somaValores
+    }
+  }, {})
+}
+
+function separaItemsPorCategory(items: IFinanceItem[]): DataItem[] {
+  const categories = dados.categories
+
+  return categories.map(category => ({
+    tipo: category.nome,
+    items: items.filter(item => item.categoryID === category.id)
+  }))
+}
+
+function selecionaDadosInvestimentosDespesas(dados: IDados) {
+  const itemsGrafico = dados.items.filter(
+    item => item.categoryID !== dados
+                                  .categories
+                                  .find(category => category.nome === 'renda')?.id)
+  
+  return itemsGrafico
+}
+
+function formatarDadosGrafico(dados: IDados) {
+  const itemsGrafico = selecionaDadosInvestimentosDespesas(dados)
+  const itemsPorTipo = separaItemsPorCategory(itemsGrafico)
+  const valorPorTipo = somarValores(itemsPorTipo)
+
+  return Object.entries(valorPorTipo).map(([tipo, valor]) => ({
     name: tipo,
-    value: calcularSomaPorTipo(itens),
-    valueReais: formatarBRL(calcularSomaPorTipo(itens)),
+    value: valor,
+    valueReais: formatarBRL(Number(valor)),
     color: CORES_POR_TIPO[tipo as keyof typeof CORES_POR_TIPO],
   }))
 }
 
-const db = formatarDadosGrafico(items)
-const saldo = calcularSaldo(items)
+const [dadosGrafico, setDadosGrafico] = useState<any>([])
+const [saldo, setSaldo] = useState(0)
+const [dbContainer, setDbContainer] = useState<DataItem[]>([])
+useEffect(() => {
+  if (dados.items && dados.items.length > 0 && dados.categories && dados.categories.length > 0) {
+    setDadosGrafico(formatarDadosGrafico(dados))
+    setSaldo(() => {
+      const itemsPorTipo = separaItemsPorCategory(dados.items)
+      const valorPorTipo = somarValores(itemsPorTipo)
 
-const dadosContainer = [
-  {
-    tipo: 'despesas',
-    items: items['despesa'] || []
-  },
-  {
-    tipo: 'investimentos',
-    items: items['investimento'] || []
+      return calcularSaldo(valorPorTipo)
+    })
+    setDbContainer(() => {
+      const items = selecionaDadosInvestimentosDespesas(dados)
+
+      return separaItemsPorCategory(items)
+    })
   }
-]
+}, [dados])
 
   return (
     <View style={styles.container}>
@@ -116,12 +198,19 @@ const dadosContainer = [
         <View style={{position: 'relative', width: '100%', alignItems: 'center'}}>
           <View style={styles.containerResumo}>
             <View style={styles.containerGrafico}>
-              <DonutChart data={db}>
+              <DonutChart data={dadosGrafico}>
                 {formatarBRL(saldo)}
-              </DonutChart>
+              </DonutChart> 
             </View>
-            <DadoContainer dados={dadosContainer[1]} cor={colors.investimento} />
-            <DadoContainer dados={dadosContainer[0]} cor={colors.despesa} />
+            {dbContainer.map((item, index) => {
+              if (item.tipo === 'renda') return
+              return(
+                <DadoContainer 
+                  key={index} 
+                  dados={item} 
+                  cor={CORES_POR_TIPO[item.tipo as keyof typeof CORES_POR_TIPO]} />
+              )
+            })}
           </View>
         </View>
       </View>

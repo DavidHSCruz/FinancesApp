@@ -1,6 +1,6 @@
-import { useContext, createContext, useState } from "react"
 import { IFinanceItem } from "@/types/Item"
 import { IFinanceCategory } from "@/types/category"
+import { createContext, useContext, useState } from "react"
 
 interface IDados {
     items: IFinanceItem[]
@@ -14,7 +14,6 @@ interface IDadosContext {
 
 const DadosContext = createContext<IDadosContext | undefined>(undefined)
 
-
 export function DadosProvider({children}: { children: React.ReactNode }) {
     const [dados, setDados] = useState<IDados>({} as IDados)
     return (
@@ -25,5 +24,8 @@ export function DadosProvider({children}: { children: React.ReactNode }) {
 }
 
 export function useDadosValue() {
-    return useContext(DadosContext)
+    const dadosContext = useContext(DadosContext)
+    if (!dadosContext) throw new Error('useDadosValue must be used within a DadosProvider')
+        
+    return dadosContext
 }

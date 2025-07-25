@@ -1,3 +1,4 @@
+import { IDados } from "@/types/dados"
 import { IFinanceItem } from "@/types/Item"
 import { valorFormatadoDB } from "@/utils/formatacaoNumeros"
 import { dataValidation, nomeValidation, valorValidation } from "@/utils/validacoes"
@@ -5,8 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function editItem(
   item: IFinanceItem,
-  items: IFinanceItem[], 
-  setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, 
+  dados: IDados, 
+  setDados: React.Dispatch<React.SetStateAction<IDados>>, 
   editItem: IFinanceItem,
   tipoDeItem: string
 ){
@@ -15,6 +16,8 @@ export default function editItem(
     date: editItem.date,
     nome: editItem.nome,
     value: editItem.value,
+    categoryID: item.categoryID,
+    tipoID: item.tipoID
   }
 
   const [dia,mes] = item.date.split('/')
@@ -26,10 +29,13 @@ export default function editItem(
   
   
   const id = itemEditado.id
-  const newList = items.map((item) => item.id === id ? itemEditado : item)
+  const newList = dados.items.map((item) => item.id === id ? itemEditado : item)
   
   itemEditado.date = `${dia}/${mes}`
   itemEditado.value = valorFormatadoDB(itemEditado.value.toString())
-  setItems(newList)
-  AsyncStorage.setItem(`@finance:items:${tipoDeItem}`, JSON.stringify(newList))
+  setDados({
+    ...dados,
+    items: newList
+  })
+  AsyncStorage.setItem('@finance:items', JSON.stringify(newList))
 }

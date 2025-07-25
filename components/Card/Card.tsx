@@ -14,14 +14,13 @@ import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { InputList } from "../InputList/InputList"
 import { styles } from "./styles"
+import { useDadosValue } from "@/context/dadosContext"
 
 interface CardProps { 
     item: IFinanceItem, 
     newItem: IFinanceItem, 
     setItem: React.Dispatch<React.SetStateAction<IFinanceItem>>, 
-    items: IFinanceItem[], 
-    setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, 
-    tipoDeItem: string,
+    categoria: string,
     cor: string,
 }
 
@@ -29,9 +28,6 @@ function RightAction(
     prog: SharedValue<number>, 
     drag: SharedValue<number>, 
     item: IFinanceItem,
-    items: IFinanceItem[], 
-    setItems: React.Dispatch<React.SetStateAction<IFinanceItem[]>>, 
-    tipoDeItem: string,
     setEditModalVisible: React.Dispatch<React.SetStateAction<boolean>>
 ) {
     const styleAnimation = useAnimatedStyle(() => {
@@ -39,6 +35,8 @@ function RightAction(
             transform: [{ translateX: drag.value + 80 }],
         }
     })
+
+    const { dados, setDados } = useDadosValue()
 
     return (
         <Reanimated.View style={styleAnimation}>
@@ -63,10 +61,9 @@ function RightAction(
                             backgroundColor: colors.actionRed,
                         }
                     ]} onPress={() => deleteItem(
-                                        items, 
-                                        setItems, 
-                                        item, 
-                                        tipoDeItem
+                                        dados, 
+                                        setDados,
+                                        item
                                     )}>
                     <Ionicons name="trash" size={20} color={colors.secondary} />
                 </Pressable>
@@ -79,13 +76,13 @@ function Card({
     item, 
     newItem, 
     setItem, 
-    items, 
-    setItems, 
-    tipoDeItem,
+    categoria,
     cor 
 }: CardProps) {
     const [aberto, setAberto] = useState(false)
     const [editModalVisible, setEditModalVisible] = useState(false)
+
+    const { dados, setDados } = useDadosValue()
 
     return (
         <>
@@ -105,10 +102,7 @@ function Card({
                 renderRightActions={(prog, drag) => RightAction(
                                                         prog, 
                                                         drag, 
-                                                        item, 
-                                                        items, 
-                                                        setItems, 
-                                                        tipoDeItem, 
+                                                        item,
                                                         setEditModalVisible
                                                     )}
                 overshootRight={false}
@@ -133,10 +127,10 @@ function Card({
                                     action={() => {
                                         editItem(
                                             item, 
-                                            items, 
-                                            setItems, 
+                                            dados, 
+                                            setDados, 
                                             newItem, 
-                                            tipoDeItem
+                                            categoria
                                         )
                                         setEditModalVisible(false)
                                     }} 

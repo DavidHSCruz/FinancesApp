@@ -16,6 +16,10 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginRight: 10
   },
+  picker: {
+    borderBottomWidth: 1,
+    width: "50%",
+  },
   containerBG: {
     padding: 20,
     height: "100%",
