@@ -8,8 +8,7 @@ export default function editItem(
   item: IFinanceItem,
   dados: IDados, 
   setDados: React.Dispatch<React.SetStateAction<IDados>>, 
-  editItem: IFinanceItem,
-  tipoDeItem: string
+  editItem: IFinanceItem
 ){
   let itemEditado: IFinanceItem = {
     id: item.id,
@@ -17,11 +16,11 @@ export default function editItem(
     nome: editItem.nome,
     value: editItem.value,
     categoryID: item.categoryID,
-    tipoID: item.tipoID
+    tipoID: editItem.tipoID
   }
 
-  const [dia,mes] = item.date.split('/')
   
+  const [dia,mes] = editItem.date.split('/')
   const data = dataValidation(dia, mes)
   const nome = nomeValidation(item.nome)
   const value = valorValidation(item.value.toString())
@@ -33,6 +32,7 @@ export default function editItem(
   
   itemEditado.date = `${dia}/${mes}`
   itemEditado.value = valorFormatadoDB(itemEditado.value.toString())
+  
   setDados({
     ...dados,
     items: newList

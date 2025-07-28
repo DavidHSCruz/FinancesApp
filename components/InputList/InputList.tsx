@@ -17,10 +17,8 @@ interface IInputListProps {
 }
 
 export const InputList = ({ action, corTipo, item, setItem, categoria, children }: IInputListProps) => {
+    const { dados } = useDadosValue()
     const [tipoSelecionado, setTipoSelecionado] = useState(0)
-    const dadosContext = useDadosValue()
-    if (!dadosContext) throw new Error('useDadosValue must be used within a DadosProvider')
-    const { dados } = dadosContext
     const categoriaSelecionada = dados.categories.filter(c => c.nome === categoria)[0]
     const categoriaItems = categoriaSelecionada.tipos
     
@@ -51,7 +49,7 @@ export const InputList = ({ action, corTipo, item, setItem, categoria, children 
         <View style={[
             styles.picker,
             {
-                borderColor: corTipo
+                borderColor: corTipo,
             }
         ]}>
             <Picker

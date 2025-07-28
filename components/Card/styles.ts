@@ -39,17 +39,21 @@ export const styles = StyleSheet.create({
     containerModalEdit: {
         width: w,
         height: h,
+        backgroundColor: colors.bg1 + 'd5',
         justifyContent: "center",
         alignItems: "center",
         padding: 10,
     },
     ModalEdit: {
-        width: '100%',
-        height: 100,
-        backgroundColor: '#0008',
+        backgroundColor: colors.bg1,
         borderRadius: 5,
         padding: 10,
         justifyContent: "center",
         alignItems: "center",
+
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
     },
 })

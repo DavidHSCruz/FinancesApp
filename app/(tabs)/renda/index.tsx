@@ -51,8 +51,6 @@ export default function Renda() {
           renderItem={({ item }) => (
               <Card 
                 item={item}
-                newItem={newItem}
-                setItem={setNewItem}
                 categoria={categoria} 
                 cor={cor}
               />

@@ -6,7 +6,6 @@ import { useDadosValue } from "@/context/dadosContext"
 import { IDados } from "@/types/dados"
 import { IFinanceItem } from "@/types/Item"
 import { carregarDadosStorage } from "@/utils/carregaDados"
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useEffect, useState } from "react"
 import { StyleSheet, Text, View } from "react-native"
 interface DataItem {
@@ -17,27 +16,6 @@ interface DataItem {
 export default function Index() {
   const [isModalAddHidden, setIsModalAddHidden] = useState(true)
   const { dados, setDados } = useDadosValue()
-
-//   useEffect(() => {
-//   const carregarItens = async () => {
-//     try {
-//       const chavesStorage = Object.values(CHAVES_STORAGE)
-//       const itensCarregados = await carregarItensStorage(chavesStorage)
-      
-//       InteractionManager.runAfterInteractions(() => {
-//         const [ items, categories ] = itensCarregados
-//         setDados({
-//           items: items.items || [], 
-//           categories: categories.categories || []
-//         })
-//       })
-//     } catch (erro) {
-//       console.error('Erro ao carregar itens:', erro)
-//     }
-//   }
-
-//   carregarItens()
-// }, [])
 
 // ESSE USE EFFECT É PARA CARREGAR OS DADOS INICIAIS SE CASO PERDIDOS
 // useEffect(() => {
@@ -202,15 +180,22 @@ useEffect(() => {
                 {formatarBRL(saldo)}
               </DonutChart> 
             </View>
-            {dbContainer.map((item, index) => {
-              if (item.tipo === 'renda') return
-              return(
-                <DadoContainer 
-                  key={index} 
-                  dados={item} 
-                  cor={CORES_POR_TIPO[item.tipo as keyof typeof CORES_POR_TIPO]} />
-              )
-            })}
+            {dados.categories.map((category, index) => (
+              <DadoContainer 
+                key={index} 
+                dados={category} 
+                cor={CORES_POR_TIPO[category.nome as keyof typeof CORES_POR_TIPO]} />
+              ))
+            }
+            {/*  {dbContainer.map((item, index) => {
+               if (item.tipo === 'renda') return
+               return(
+                 <DadoContainer 
+                   key={index} 
+                   dados={item} 
+                   cor={CORES_POR_TIPO[item.tipo as keyof typeof CORES_POR_TIPO]} />
+               )
+             })} */}
           </View>
         </View>
       </View>

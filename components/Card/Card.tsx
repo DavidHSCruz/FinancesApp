@@ -8,18 +8,16 @@ import { Modal, Pressable, Text, View } from "react-native"
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable"
 import Reanimated, { SharedValue, useAnimatedStyle } from "react-native-reanimated"
 
+import { useDadosValue } from "@/context/dadosContext"
 import deleteItem from "@/hooks/useDeleteItem"
 import editItem from "@/hooks/useEditItem"
 import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { InputList } from "../InputList/InputList"
 import { styles } from "./styles"
-import { useDadosValue } from "@/context/dadosContext"
 
 interface CardProps { 
-    item: IFinanceItem, 
-    newItem: IFinanceItem, 
-    setItem: React.Dispatch<React.SetStateAction<IFinanceItem>>, 
+    item: IFinanceItem,
     categoria: string,
     cor: string,
 }
@@ -73,16 +71,24 @@ function RightAction(
 }
 
 function Card({ 
-    item, 
-    newItem, 
-    setItem, 
+    item,
     categoria,
     cor 
 }: CardProps) {
+    const { dados, setDados } = useDadosValue()
+
     const [aberto, setAberto] = useState(false)
     const [editModalVisible, setEditModalVisible] = useState(false)
-
-    const { dados, setDados } = useDadosValue()
+    const [newItem, setNewItem] = useState<IFinanceItem>({
+        id: item.id,
+        date: item.date,
+        nome: item.nome,
+        value: item.value,
+        categoryID: item.categoryID,
+        tipoID: item.tipoID
+    })
+    const tiposDaCategoria = dados.categories.filter(c => categoria === c.nome)[0].tipos
+    const tipoDoItem = tiposDaCategoria.filter(t => t.id === item.tipoID)[0].nome
 
     return (
         <>
@@ -109,6 +115,7 @@ function Card({
             >
                 <View style={styles.item}>
                     <Text style={styles.itemText}>{item.date}</Text>
+                    <Text style={styles.itemText}>{tipoDoItem}</Text>
                     <Text style={styles.itemText}>{item.nome}</Text>
                     <Text style={styles.itemText}>{valorFormatadoBR(Number(item.value))}</Text>
                 </View>
@@ -129,14 +136,14 @@ function Card({
                                             item, 
                                             dados, 
                                             setDados, 
-                                            newItem, 
-                                            categoria
+                                            newItem
                                         )
                                         setEditModalVisible(false)
                                     }} 
                                     corTipo={colors.placeholder}
                                     item={newItem} 
-                                    setItem={setItem}>
+                                    setItem={setNewItem}
+                                    categoria={categoria}>
                                     <Text style={{color: colors.text}}>
                                         <FontAwesome6 name="check" size={20} color="black" />
                                     </Text>

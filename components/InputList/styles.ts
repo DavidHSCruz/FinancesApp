@@ -1,5 +1,7 @@
 import { colors } from "@/constants/colors";
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+
+const { width: w }= Dimensions.get("window")
 
 export const styles = StyleSheet.create({
   inputContainer: {
@@ -18,7 +20,7 @@ export const styles = StyleSheet.create({
   },
   picker: {
     borderBottomWidth: 1,
-    width: "50%",
+    width: w/2
   },
   containerBG: {
     padding: 20,

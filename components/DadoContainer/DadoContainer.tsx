@@ -1,23 +1,18 @@
 import { colors } from "@/constants/colors";
-import { IFinanceItem } from "@/types/Item";
+import { IFinanceCategory } from "@/types/category";
 import { FlatList, Text, TextInput, View } from "react-native";
 import { styles } from "./styles";
 
-interface dados {
-    tipo: string
-    items: IFinanceItem[]
-}
-
 interface DadoContainerProps {
     cor: string,
-    dados: dados
+    dados: IFinanceCategory
 }
 export const DadoContainer = ({ cor, dados }: DadoContainerProps) => {
     const tabTitulos = [ ' ', 'Planejado', 'Real', 'Diferença' ]
     const larguraCol = 80
 
-    const titulo = dados.tipo
-    const values = dados.items
+    const titulo = dados.nome
+    const values = dados.tipos
 
     return (
         <View style={styles.container}>
@@ -65,7 +60,7 @@ export const DadoContainer = ({ cor, dados }: DadoContainerProps) => {
                                 keyboardType="numeric"
                                 placeholder=""
                                 onChange={() => {}} 
-                                value={item.value.toString()}
+                                value={item.nome}
                             />
                             <Text style={[styles.informacoes,{width: larguraCol}]}>a</Text>
                             <Text style={[styles.informacoes,{width: larguraCol}]}>b</Text>
