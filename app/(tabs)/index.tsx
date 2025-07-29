@@ -3,6 +3,7 @@ import DonutChart from "@/components/GraficoDonut/DonutChart"
 import { MenuAddButton } from "@/components/MenuAddButton/MenuAddButton"
 import { colors } from "@/constants/colors"
 import { useDadosValue } from "@/context/dadosContext"
+import { IFinanceCategory } from "@/types/category"
 import { IDados } from "@/types/dados"
 import { IFinanceItem } from "@/types/Item"
 import { carregarDadosStorage } from "@/utils/carregaDados"
@@ -128,12 +129,9 @@ function separaItemsPorCategory(items: IFinanceItem[]): DataItem[] {
 }
 
 function selecionaDadosInvestimentosDespesas(dados: IDados) {
-  const itemsGrafico = dados.items.filter(
-    item => item.categoryID !== dados
-                                  .categories
-                                  .find(category => category.nome === 'renda')?.id)
+  const idDaRenda = dados.categories.find(category => category.nome === 'renda')?.id
   
-  return itemsGrafico
+  return dados.items.filter(item => item.categoryID !== idDaRenda)
 }
 
 function formatarDadosGrafico(dados: IDados) {
@@ -151,7 +149,7 @@ function formatarDadosGrafico(dados: IDados) {
 
 const [dadosGrafico, setDadosGrafico] = useState<any>([])
 const [saldo, setSaldo] = useState(0)
-const [dbContainer, setDbContainer] = useState<DataItem[]>([])
+const [categoriasSemRenda, setCategoriasSemRenda] = useState<IFinanceCategory[]>([] as IFinanceCategory[])
 useEffect(() => {
   if (dados.items && dados.items.length > 0 && dados.categories && dados.categories.length > 0) {
     setDadosGrafico(formatarDadosGrafico(dados))
@@ -161,10 +159,11 @@ useEffect(() => {
 
       return calcularSaldo(valorPorTipo)
     })
-    setDbContainer(() => {
-      const items = selecionaDadosInvestimentosDespesas(dados)
-
-      return separaItemsPorCategory(items)
+    setCategoriasSemRenda(() => {
+      const rendaID = dados.categories.find(category => category.nome === 'renda')?.id
+      const categoriasUtilizadas = dados.categories.filter(category => category.id !== rendaID)
+      
+      return categoriasUtilizadas
     })
   }
 }, [dados])
@@ -180,22 +179,13 @@ useEffect(() => {
                 {formatarBRL(saldo)}
               </DonutChart> 
             </View>
-            {dados.categories.map((category, index) => (
-              <DadoContainer 
-                key={index} 
-                dados={category} 
-                cor={CORES_POR_TIPO[category.nome as keyof typeof CORES_POR_TIPO]} />
+            {categoriasSemRenda.map((category, index) => (
+                <DadoContainer 
+                  key={index} 
+                  category={category} 
+                  cor={CORES_POR_TIPO[category.nome as keyof typeof CORES_POR_TIPO]} />
               ))
             }
-            {/*  {dbContainer.map((item, index) => {
-               if (item.tipo === 'renda') return
-               return(
-                 <DadoContainer 
-                   key={index} 
-                   dados={item} 
-                   cor={CORES_POR_TIPO[item.tipo as keyof typeof CORES_POR_TIPO]} />
-               )
-             })} */}
           </View>
         </View>
       </View>

@@ -1,18 +1,20 @@
 import { colors } from "@/constants/colors";
+import editCategory from "@/hooks/useEditCategory";
 import { IFinanceCategory } from "@/types/category";
 import { FlatList, Text, TextInput, View } from "react-native";
 import { styles } from "./styles";
+import { DadoInput } from "./DadoInput/DadoInput";
 
 interface DadoContainerProps {
     cor: string,
-    dados: IFinanceCategory
+    category: IFinanceCategory
 }
-export const DadoContainer = ({ cor, dados }: DadoContainerProps) => {
+export const DadoContainer = ({ cor, category }: DadoContainerProps) => {
     const tabTitulos = [ ' ', 'Planejado', 'Real', 'Diferença' ]
     const larguraCol = 80
 
-    const titulo = dados.nome
-    const values = dados.tipos
+    const titulo = category.nome
+    const values = category.tipos
 
     return (
         <View style={styles.container}>
@@ -29,44 +31,12 @@ export const DadoContainer = ({ cor, dados }: DadoContainerProps) => {
                 </View>
                 <FlatList
                     data={values}
-                    renderItem={ ({ item }) => {
-
-                        return (
-                        <View style={styles.informacaoContainer}>
-                            <TextInput 
-                                style={[
-                                    styles.informacoes,
-                                    styles.input,
-                                    {
-                                        borderColor: '#faf',
-                                        width: larguraCol
-                                    }
-                                ]}
-                                placeholderTextColor={colors.placeholder} 
-                                placeholder=""
-                                onChange={() => {}}
-                                value={item.nome}
-                            />
-                            <TextInput 
-                                style={[
-                                    styles.informacoes,
-                                    styles.input,
-                                    {
-                                        borderColor: '#faf',
-                                        width: larguraCol
-                                    }
-                                ]}
-                                placeholderTextColor={colors.placeholder} 
-                                keyboardType="numeric"
-                                placeholder=""
-                                onChange={() => {}} 
-                                value={item.nome}
-                            />
-                            <Text style={[styles.informacoes,{width: larguraCol}]}>a</Text>
-                            <Text style={[styles.informacoes,{width: larguraCol}]}>b</Text>
-                        </View>
-                        )
-                    }
+                    renderItem={ ({ item }) => (
+                        <DadoInput
+                            item={item}
+                            categoryID={category.id}
+                        />
+                    )
                     }
                 />
             </View>

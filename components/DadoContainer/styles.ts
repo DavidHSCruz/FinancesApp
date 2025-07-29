@@ -36,22 +36,5 @@ export const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: 'bold',
         textAlign: 'center',
-    },
-    informacaoContainer: {
-        flexDirection: 'row',
-        width: '100%',
-        gap: 10,
-        justifyContent: 'space-between',
-    },
-    informacoes: {
-        paddingHorizontal:10, 
-        paddingVertical: 3, 
-        color: colors.text, 
-        fontSize: 12, 
-        textAlign: 'center',
-    },
-    input: {
-        borderBottomWidth: 1,
-        color: colors.text,
     }
 })
