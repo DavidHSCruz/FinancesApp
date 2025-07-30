@@ -5,6 +5,7 @@ import { IFinanceCategoryType } from "@/types/category";
 import { useState } from "react";
 import { Text, TextInput, View } from "react-native";
 import { styles } from "./styles";
+import { valorFormatadoDB } from "@/utils/formatacaoNumeros";
 
 interface DadoContainerProps {
     item: IFinanceCategoryType,
@@ -12,7 +13,7 @@ interface DadoContainerProps {
 }
 export const DadoInput = ({ item, categoryID }: DadoContainerProps) => {
     const larguraCol = 80
-    const [itemValue, setItemValue] = useState<string>(item.nome || '')
+    const [itemValue, setItemValue] = useState<IFinanceCategoryType>(item)
 
     const {dados, setDados} = useDadosValue()
 
@@ -29,9 +30,9 @@ export const DadoInput = ({ item, categoryID }: DadoContainerProps) => {
                 ]}
                 placeholderTextColor={colors.placeholder} 
                 placeholder=""
-                onChange={e => setItemValue(e.nativeEvent.text)}
-                onBlur={() => editCategory(item, dados, setDados, categoryID)}
-                value={itemValue}
+                onChange={e => setItemValue({...itemValue, nome: e.nativeEvent.text})}
+                onBlur={() => editCategory(itemValue, dados, setDados, categoryID)}
+                value={itemValue.nome}
             />
             <TextInput 
                 style={[
@@ -45,8 +46,9 @@ export const DadoInput = ({ item, categoryID }: DadoContainerProps) => {
                 placeholderTextColor={colors.placeholder} 
                 keyboardType="numeric"
                 placeholder=""
-                onChange={() => {}} 
-                value={item.planejadoValue?.toString() || ''}
+                onChange={e => setItemValue({...itemValue, planejadoValue: valorFormatadoDB(e.nativeEvent.text)})}
+                onBlur={() => editCategory(itemValue, dados, setDados, categoryID)}
+                value={itemValue.planejadoValue?.toString()}
             />
             <Text style={[styles.informacoes,{width: larguraCol}]}>a</Text>
             <Text style={[styles.informacoes,{width: larguraCol}]}>b</Text>
