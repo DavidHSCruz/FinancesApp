@@ -8,7 +8,6 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: colors.bg2,
         borderRadius: 20,
-        alignItems: "center",
         gap: 10,
         
         elevation: 8,
@@ -26,15 +25,12 @@ export const styles = StyleSheet.create({
     },
     titulosContainer: {
         flexDirection: 'row',
-        width: '100%', 
-        justifyContent: 'space-between',
     },
-    titulos: {
-        paddingHorizontal:10, 
-        paddingVertical: 3, 
+    titulos: { 
+        paddingVertical: 3,
         color: colors.text, 
         fontSize: 13,
         fontWeight: 'bold',
-        textAlign: 'center',
+        textAlign: 'right',
     }
 })

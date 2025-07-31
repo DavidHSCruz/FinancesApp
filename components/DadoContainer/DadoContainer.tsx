@@ -1,9 +1,8 @@
 import { colors } from "@/constants/colors";
-import editCategory from "@/hooks/useEditCategory";
 import { IFinanceCategory } from "@/types/category";
-import { FlatList, Text, TextInput, View } from "react-native";
-import { styles } from "./styles";
+import { FlatList, Text, View } from "react-native";
 import { DadoInput } from "./DadoInput/DadoInput";
+import { styles } from "./styles";
 
 interface DadoContainerProps {
     cor: string,
@@ -11,7 +10,7 @@ interface DadoContainerProps {
 }
 export const DadoContainer = ({ cor, category }: DadoContainerProps) => {
     const tabTitulos = [ ' ', 'Planejado', 'Real', 'Diferença' ]
-    const larguraCol = 80
+    const larguraCol = '25%'
 
     const titulo = category.nome
     const values = category.tipos
@@ -33,7 +32,7 @@ export const DadoContainer = ({ cor, category }: DadoContainerProps) => {
                     data={values}
                     renderItem={ ({ item }) => (
                         <DadoInput
-                            item={item}
+                            tipo={item}
                             categoryID={category.id}
                         />
                     )
