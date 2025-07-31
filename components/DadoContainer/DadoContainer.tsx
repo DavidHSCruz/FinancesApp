@@ -1,6 +1,6 @@
 import { colors } from "@/constants/colors";
 import { IFinanceCategory } from "@/types/category";
-import { FlatList, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { DadoInput } from "./DadoInput/DadoInput";
 import { styles } from "./styles";
 
@@ -28,16 +28,13 @@ export const DadoContainer = ({ cor, category }: DadoContainerProps) => {
                         </Text>
                     ))}
                 </View>
-                <FlatList
-                    data={values}
-                    renderItem={ ({ item }) => (
-                        <DadoInput
-                            tipo={item}
-                            categoryID={category.id}
-                        />
-                    )
-                    }
-                />
+                {values.map((item) => (
+                    <DadoInput
+                        key={item.id}
+                        tipo={item}
+                        categoryID={category.id}
+                    />
+                ))}
             </View>
         </View>
     )

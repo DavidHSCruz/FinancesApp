@@ -8,7 +8,7 @@ import { IDados } from "@/types/dados"
 import { IFinanceItem } from "@/types/Item"
 import { carregarDadosStorage } from "@/utils/carregaDados"
 import { useEffect, useState } from "react"
-import { StyleSheet, Text, View } from "react-native"
+import { ScrollView, StyleSheet, Text, View } from "react-native"
 interface DataItem {
   tipo: string
   items: IFinanceItem[]
@@ -170,25 +170,27 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.containerSaldo}>
-        <Text style={styles.saldo}>{`Saldo = ${formatarBRL(saldo)}`}</Text>
-        <View style={{position: 'relative', width: '100%', alignItems: 'center'}}>
-          <View style={styles.containerResumo}>
-            <View style={styles.containerGrafico}>
-              <DonutChart data={dadosGrafico}>
-                {formatarBRL(saldo)}
-              </DonutChart> 
+      <ScrollView>
+        <View style={styles.containerSaldo}>
+          <Text style={styles.saldo}>{`Saldo = ${formatarBRL(saldo)}`}</Text>
+          <View style={{position: 'relative', width: '100%', alignItems: 'center'}}>
+            <View style={styles.containerResumo}>
+              <View style={styles.containerGrafico}>
+                <DonutChart data={dadosGrafico}>
+                  {formatarBRL(saldo)}
+                </DonutChart> 
+              </View>
+              {categoriasSemRenda.map((category, index) => (
+                  <DadoContainer 
+                    key={index} 
+                    category={category} 
+                    cor={CORES_POR_TIPO[category.nome as keyof typeof CORES_POR_TIPO]} />
+                ))
+              }
             </View>
-            {categoriasSemRenda.map((category, index) => (
-                <DadoContainer 
-                  key={index} 
-                  category={category} 
-                  cor={CORES_POR_TIPO[category.nome as keyof typeof CORES_POR_TIPO]} />
-              ))
-            }
           </View>
         </View>
-      </View>
+      </ScrollView>
       <MenuAddButton 
         onPress={() => setIsModalAddHidden(!isModalAddHidden)} 
         hiddenModal={isModalAddHidden} 
