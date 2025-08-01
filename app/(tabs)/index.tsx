@@ -15,7 +15,6 @@ interface DataItem {
 }
 
 export default function Index() {
-  const [isModalAddHidden, setIsModalAddHidden] = useState(true)
   const { dados, setDados } = useDadosValue()
 
 // ESSE USE EFFECT É PARA CARREGAR OS DADOS INICIAIS SE CASO PERDIDOS
@@ -191,10 +190,7 @@ useEffect(() => {
           </View>
         </View>
       </ScrollView>
-      <MenuAddButton 
-        onPress={() => setIsModalAddHidden(!isModalAddHidden)} 
-        hiddenModal={isModalAddHidden} 
-      />
+      <MenuAddButton />
     </View>
   )
 }
@@ -235,6 +231,5 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "90%",
     gap: 20,
-    
   }
 })

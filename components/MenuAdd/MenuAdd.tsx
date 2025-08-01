@@ -1,11 +1,15 @@
 import { colors } from '@/constants/colors';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export const MenuAdd = () => {
+interface MenuAddProps {
+    action: () => void
+}
+
+export const MenuAdd = ({ action }: MenuAddProps) => {
     return (
         <>
-            <View style={styles.containerBlur} />
+            <Pressable style={styles.containerBlur} onPress={action} />
             <View style={styles.container}>
                 <Text style={styles.text}>Renda</Text>
                 <Text style={styles.text}>Despesa</Text>

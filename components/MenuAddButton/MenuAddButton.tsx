@@ -1,37 +1,65 @@
 import { colors } from "@/constants/colors"
 import { Ionicons } from "@expo/vector-icons"
+import { useRef, useState } from "react"
 import { Animated, Pressable, StyleSheet } from "react-native"
 import { MenuAdd } from "../MenuAdd/MenuAdd"
 
-interface MenuAddProps {
-  onPress: () => void,
-  hiddenModal: boolean
-}
-export const MenuAddButton = ({ onPress: setHidden , hiddenModal } : MenuAddProps ) => {
-  const rotateIcon = new Animated.Value(0)
+export const MenuAddButton = () => {
+  const rotateIcon = useRef(new Animated.Value(0)).current
+  const opacityModal = useRef(new Animated.Value(0)).current
   const rotateAnim = rotateIcon.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '45deg']
   })
 
+  const opacityAnim = opacityModal.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1]
+  })
+  const [modalHidden, setModalHidden] = useState(true)
+  
   function rotateIconAnimation() {
     Animated.timing(rotateIcon, {
-      toValue: !hiddenModal ? 0:1,
+      toValue: !modalHidden ? 0:1,
       duration: 300,
       useNativeDriver: true,
-    }).start(setHidden)
+    }).start()
+    Animated.timing(opacityModal, {
+      toValue: !modalHidden ? 0:1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start()
   }
+
 
   return (
     <>
-      <Pressable style={styles.button} onPress={rotateIconAnimation}>
+      <Pressable style={styles.button} onPress={e => {
+          setModalHidden(!modalHidden)
+          rotateIconAnimation()
+        }}>
         <Animated.View style={{
-          transform: [{rotate: rotateAnim}]
+          transform: [{
+            rotate: rotateAnim,
+          }]
         }}>
           <Ionicons name="add-circle" size={50} color={colors.primary} />
         </Animated.View>
       </Pressable>
-      {!hiddenModal && <MenuAdd />}
+        <Animated.View 
+          style={[
+            styles.menuModalContainer,
+            {
+              opacity: opacityAnim
+            }
+          ]}
+          pointerEvents={modalHidden ? 'none' : 'auto'}
+        >
+          <MenuAdd action={() => {
+            setModalHidden(true)
+            rotateIconAnimation()
+          }}/>
+        </Animated.View>
     </>
   )
 }
@@ -43,5 +71,10 @@ const styles = StyleSheet.create({
     bottom: 80,
     right: 20,
     zIndex: 100,
+  },
+  menuModalContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%'
   }
 })
