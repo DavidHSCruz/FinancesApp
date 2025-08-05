@@ -31,6 +31,8 @@ export const MenuAddButton = () => {
     }).start()
   }
 
+  console.log(modalHidden)
+
 
   return (
     <>

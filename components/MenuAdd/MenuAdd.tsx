@@ -1,19 +1,50 @@
 import { colors } from '@/constants/colors';
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useDadosValue } from '@/context/dadosContext';
+import { IFinanceCategory } from '@/types/category';
+import { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface MenuAddProps {
     action: () => void
 }
 
 export const MenuAdd = ({ action }: MenuAddProps) => {
+    const {dados, setDados} = useDadosValue()
+    const [listaDeCategoriasSemRenda, setListaDeCategoriasSemRenda] = useState<IFinanceCategory[]>([] as IFinanceCategory[])
+    useEffect(() => {
+        if(dados.categories) {
+            setListaDeCategoriasSemRenda(dados.categories.filter(cat => cat.nome !== 'renda'))
+        }
+    }, [dados])
+    const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('')
+
     return (
         <>
             <Pressable style={styles.containerBlur} onPress={action} />
             <View style={styles.container}>
-                <Text style={styles.text}>Renda</Text>
-                <Text style={styles.text}>Despesa</Text>
-                <Text style={styles.text}>Investimento</Text>
+                {listaDeCategoriasSemRenda.map((cat, index) => {
+                    const nomeFormatado = cat.nome.charAt(0).toUpperCase() + cat.nome.slice(1).toLowerCase()
+                    return(
+                        <Pressable 
+                            key={index} 
+                            style={styles.button}
+                            onPress={() => {
+                                setCategoriaSelecionada(nomeFormatado)
+                                action()
+                        }}>
+                            <Text style={styles.text}>{nomeFormatado}</Text>
+                        </Pressable>
+                    )
+                })}
+                <View style={{flex: 1, flexDirection: 'row', gap: 20}}>
+                    <TextInput style={{ marginLeft: 20 }} placeholder='Nova Categoria...' placeholderTextColor={colors.text}></TextInput>
+                    <Pressable
+                        style={styles.buttonInput} 
+                        onPress={() => {
+                            action()
+                    }}>
+                    </Pressable>
+                </View>
             </View>
         </>
     );
@@ -38,9 +69,15 @@ const styles = StyleSheet.create({
         backgroundColor: colors.bg2,
         opacity: 0.75,
     },
+    button:{
+        padding: 20,
+    },
+    buttonInput: {
+        padding: 20,
+        backgroundColor: colors.actionOrange
+    },
     text: {
         color: colors.text,
-        padding: 20,
     }
 })
 
