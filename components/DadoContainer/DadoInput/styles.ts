@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native"
 export const styles = StyleSheet.create({
     informacaoContainer: {
         flexDirection: 'row',
+        alignItems:'center'
     },
     informacoes: {
         paddingVertical: 3, 

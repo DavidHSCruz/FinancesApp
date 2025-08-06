@@ -3,9 +3,11 @@ import { useDadosValue } from "@/context/dadosContext";
 import editCategoryType from "@/hooks/useEditCategoryType";
 import { IFinanceCategoryType } from "@/types/category";
 import { valorFormatadoBR, valorFormatadoDB } from "@/utils/formatacaoNumeros";
+import { AntDesign } from '@expo/vector-icons';
 import { useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { styles } from "./styles";
+import deleteCategoryType from "@/hooks/useDeleteCategoryType";
 
 interface DadoContainerProps {
     tipo: IFinanceCategoryType,
@@ -86,6 +88,11 @@ export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
                     color: valorDiferenca < 0 ? colors.despesa : colors.renda
                 }
             ]}>{valorFormatadoBR(valorDiferenca)}</Text>
+            <View style={{paddingLeft:10}}>
+                <Pressable onPress={() => deleteCategoryType(dados, setDados, tipo.id, categoryID)}>
+                    <AntDesign name="close" size={10} color={colors.placeholder} />
+                </Pressable>
+            </View>
         </View>
     )
 }
