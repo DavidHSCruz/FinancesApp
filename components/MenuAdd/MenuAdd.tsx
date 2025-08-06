@@ -1,8 +1,10 @@
-import { colors } from '@/constants/colors';
-import { useDadosValue } from '@/context/dadosContext';
-import { IFinanceCategory } from '@/types/category';
-import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { colors } from '@/constants/colors'
+import { useDadosValue } from '@/context/dadosContext'
+import addCategoryType from '@/hooks/useAddCategoryType'
+import { IFinanceCategory } from '@/types/category'
+import { AntDesign } from '@expo/vector-icons'
+import { useEffect, useState } from 'react'
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 
 interface MenuAddProps {
     action: () => void
@@ -16,7 +18,7 @@ export const MenuAdd = ({ action }: MenuAddProps) => {
             setListaDeCategoriasSemRenda(dados.categories.filter(cat => cat.nome !== 'renda'))
         }
     }, [dados])
-    const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('')
+    const [inputNovaCategoriaValue, setInputNovaCategoriaValue] = useState('')
 
     return (
         <>
@@ -29,20 +31,28 @@ export const MenuAdd = ({ action }: MenuAddProps) => {
                             key={index} 
                             style={styles.button}
                             onPress={() => {
-                                setCategoriaSelecionada(nomeFormatado)
+                                const categoriaID = dados.categories.filter(cat => cat.nome === nomeFormatado.toLowerCase())[0].id
                                 action()
+                                addCategoryType(dados, setDados, categoriaID)
                         }}>
-                            <Text style={styles.text}>{nomeFormatado}</Text>
+                            <Text style={styles.text}>{'Tipo de ' + nomeFormatado}</Text>
                         </Pressable>
                     )
                 })}
                 <View style={{flex: 1, flexDirection: 'row', gap: 20}}>
-                    <TextInput style={{ marginLeft: 20 }} placeholder='Nova Categoria...' placeholderTextColor={colors.text}></TextInput>
+                    <TextInput 
+                        style={{ marginLeft: 20, color: colors.text }} 
+                        placeholder='Nova Categoria...' 
+                        placeholderTextColor={colors.placeholder} 
+                        onChange={e => setInputNovaCategoriaValue(e.nativeEvent.text)}
+                        value={inputNovaCategoriaValue}
+                    />
                     <Pressable
-                        style={styles.buttonInput} 
+                        style={{justifyContent:'center'}}
                         onPress={() => {
                             action()
                     }}>
+                        <AntDesign name="checkcircle" size={30} color={colors.primary} />
                     </Pressable>
                 </View>
             </View>
@@ -71,10 +81,6 @@ const styles = StyleSheet.create({
     },
     button:{
         padding: 20,
-    },
-    buttonInput: {
-        padding: 20,
-        backgroundColor: colors.actionOrange
     },
     text: {
         color: colors.text,

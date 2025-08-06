@@ -31,9 +31,6 @@ export const MenuAddButton = () => {
     }).start()
   }
 
-  console.log(modalHidden)
-
-
   return (
     <>
       <Pressable style={styles.button} onPress={e => {
@@ -45,7 +42,11 @@ export const MenuAddButton = () => {
             rotate: rotateAnim,
           }]
         }}>
-          <Ionicons name="add-circle" size={50} color={colors.primary} />
+          <Ionicons 
+            name="add-circle" 
+            size={50} 
+            color={modalHidden ? colors.primary : colors.placeholder} 
+          />
         </Animated.View>
       </Pressable>
         <Animated.View 

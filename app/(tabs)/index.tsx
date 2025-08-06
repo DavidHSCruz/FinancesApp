@@ -8,7 +8,7 @@ import { IDados } from "@/types/dados"
 import { IFinanceItem } from "@/types/Item"
 import { carregarDadosStorage } from "@/utils/carregaDados"
 import { useEffect, useState } from "react"
-import { ScrollView, StyleSheet, Text, View } from "react-native"
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native"
 interface DataItem {
   tipo: string
   items: IFinanceItem[]
@@ -19,55 +19,77 @@ export default function Index() {
 
 // ESSE USE EFFECT É PARA CARREGAR OS DADOS INICIAIS SE CASO PERDIDOS
 // useEffect(() => {
-//   AsyncStorage.setItem('@finance:items', JSON.stringify([
-//     {
-//       id: 1,
-//       date: "2025-07-24",
-//       nome: "Salário",
-//       value: 3500,
-//       categoryID: 1,
-//       tipoID: 1
-//     },
-//     {
-//       id: 2,
-//       date: "2025-07-24",
-//       nome: "Aluguel",
-//       value: 1200,
-//       categoryID: 2,
-//       tipoID: 1
-//     },
-//     {
-//       id: 3,
-//       date: "2025-07-24",
-//       nome: "Compra de ações",
-//       value: 500,
-//       categoryID: 3,
-//       tipoID: 1
-//     }
-//   ]))
+//   // AsyncStorage.setItem('@finance:items', JSON.stringify([
+//   //   {
+//   //     id: 1,
+//   //     date: "2025-07-24",
+//   //     nome: "Salário",
+//   //     value: 3500,
+//   //     categoryID: 1,
+//   //     tipoID: 1
+//   //   },
+//   //   {
+//   //     id: 2,
+//   //     date: "2025-07-24",
+//   //     nome: "Aluguel",
+//   //     value: 1200,
+//   //     categoryID: 2,
+//   //     tipoID: 1
+//   //   },
+//   //   {
+//   //     id: 3,
+//   //     date: "2025-07-24",
+//   //     nome: "Compra de ações",
+//   //     value: 500,
+//   //     categoryID: 3,
+//   //     tipoID: 1
+//   //   }
+//   // ]))
 //   AsyncStorage.setItem('@finance:categories', JSON.stringify([
 //     {
 //       id: 1,
 //       nome: "renda",
 //       tipos: [
-//         { id: 1, nome: "Salário" },
-//         { id: 2, nome: "Freelance" }
+//         {
+//           id: 1,
+//           nome: "Salário"
+//         },
+//         {
+//           id: 2,
+//           nome: "Freelance"
+//         }
 //       ]
 //     },
 //     {
 //       id: 2,
 //       nome: "despesa",
 //       tipos: [
-//         { id: 1, nome: "Aluguel" },
-//         { id: 2, nome: "Supermercado" }
+//         {
+//           id: 1,
+//           nome: "Aluguel",
+//           planejadoValue: "R$ 1.389,55"
+//         },
+//         {
+//           id: 2,
+//           nome: "Supermercado",
+//           planejadoValue: "R$ 905,00"
+//         }
 //       ]
 //     },
 //     {
 //       id: 3,
 //       nome: "investimento",
 //       tipos: [
-//         { id: 1, nome: "Ações" },
-//         { id: 2, nome: "Fundos Imobiliários" }
+//         {
+//           id: 1,
+//           nome: "Ações",
+//           planejadoValue: ""
+//         },
+//         {
+//           id: 2,
+//           nome: "Fundos Imobiliários",
+//           planejadoValue: "0,00"
+//         }
 //       ]
 //     }
 //   ]))
@@ -168,30 +190,30 @@ useEffect(() => {
 }, [dados])
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 150 }}>
         <View style={styles.containerSaldo}>
           <Text style={styles.saldo}>{`Saldo = ${formatarBRL(saldo)}`}</Text>
-          <View style={{position: 'relative', width: '100%', alignItems: 'center'}}>
-            <View style={styles.containerResumo}>
-              <View style={styles.containerGrafico}>
-                <DonutChart data={dadosGrafico}>
-                  {formatarBRL(saldo)}
-                </DonutChart> 
-              </View>
-              {categoriasSemRenda.map((category, index) => (
-                  <DadoContainer 
-                    key={index} 
-                    category={category} 
-                    cor={CORES_POR_TIPO[category.nome as keyof typeof CORES_POR_TIPO]} />
-                ))
-              }
+        </View>
+        <View style={{marginTop: -40, alignItems: 'center'}}>
+          <View style={styles.containerResumo}>
+            <View style={styles.containerGrafico}>
+              <DonutChart data={dadosGrafico}>
+                {formatarBRL(saldo)}
+              </DonutChart> 
             </View>
+            {categoriasSemRenda.map((category, index) => (
+                <DadoContainer 
+                  key={index} 
+                  category={category} 
+                  cor={CORES_POR_TIPO[category.nome as keyof typeof CORES_POR_TIPO]} />
+              ))
+            }
           </View>
         </View>
       </ScrollView>
       <MenuAddButton />
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -228,7 +250,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   containerResumo: {
-    position: "absolute",
     width: "90%",
     gap: 20,
   }

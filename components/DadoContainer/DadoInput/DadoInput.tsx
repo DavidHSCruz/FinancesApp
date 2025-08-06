@@ -1,6 +1,6 @@
 import { colors } from "@/constants/colors";
 import { useDadosValue } from "@/context/dadosContext";
-import editCategory from "@/hooks/useEditCategory";
+import editCategoryType from "@/hooks/useEditCategoryType";
 import { IFinanceCategoryType } from "@/types/category";
 import { valorFormatadoBR, valorFormatadoDB } from "@/utils/formatacaoNumeros";
 import { useState } from "react";
@@ -44,7 +44,7 @@ export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
                 placeholderTextColor={colors.placeholder} 
                 placeholder=""
                 onChange={e => setItemValue({...itemValue, nome: e.nativeEvent.text})}
-                onBlur={() => editCategory(itemValue, dados, setDados, categoryID)}
+                onBlur={() => editCategoryType(itemValue, dados, setDados, categoryID)}
                 value={itemValue.nome}
             />
             <TextInput 
@@ -74,7 +74,7 @@ export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
                     
                     setItemValue({...itemValue, planejadoValue: formatValueBR})
 
-                    editCategory(itemValue, dados, setDados, categoryID)
+                    editCategoryType(itemValue, dados, setDados, categoryID)
                 }}
                 value={itemValue.planejadoValue.toString()}
             />
