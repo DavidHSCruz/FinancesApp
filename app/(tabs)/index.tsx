@@ -1,5 +1,6 @@
 import { DadoContainer } from "@/components/DadoContainer/DadoContainer"
 import DonutChart from "@/components/GraficoDonut/DonutChart"
+import { IntervalSelector } from "@/components/IntervalSelector/IntervalSelector"
 import { MenuAddButton } from "@/components/MenuAddButton/MenuAddButton"
 import { colors } from "@/constants/colors"
 import { useDadosValue } from "@/context/dadosContext"
@@ -171,6 +172,7 @@ function formatarDadosGrafico(dados: IDados) {
 const [dadosGrafico, setDadosGrafico] = useState<any>([])
 const [saldo, setSaldo] = useState(0)
 const [categoriasSemRenda, setCategoriasSemRenda] = useState<IFinanceCategory[]>([] as IFinanceCategory[])
+const [intervalo, setIntervalo] = useState('Mês')
 useEffect(() => {
   if (dados.items && dados.items.length > 0 && dados.categories && dados.categories.length > 0) {
     setDadosGrafico(formatarDadosGrafico(dados))
@@ -198,6 +200,7 @@ useEffect(() => {
         <View style={{marginTop: -40, alignItems: 'center'}}>
           <View style={styles.containerResumo}>
             <View style={styles.containerGrafico}>
+              <IntervalSelector intervalo={intervalo} setIntervalo={setIntervalo}/>
               <DonutChart data={dadosGrafico}>
                 {formatarBRL(saldo)}
               </DonutChart> 
@@ -248,6 +251,9 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowRadius: 8,
+  },
+  text: {
+    color:colors.text
   },
   containerResumo: {
     width: "90%",
