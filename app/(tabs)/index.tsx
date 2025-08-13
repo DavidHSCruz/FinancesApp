@@ -172,7 +172,12 @@ function formatarDadosGrafico(dados: IDados) {
 const [dadosGrafico, setDadosGrafico] = useState<any>([])
 const [saldo, setSaldo] = useState(0)
 const [categoriasSemRenda, setCategoriasSemRenda] = useState<IFinanceCategory[]>([] as IFinanceCategory[])
-const [intervalo, setIntervalo] = useState('Mês')
+
+const [intervalo, setIntervalo] = useState({
+  intervalo: 'Dia',
+  dataInicial: new Date()
+})
+
 useEffect(() => {
   if (dados.items && dados.items.length > 0 && dados.categories && dados.categories.length > 0) {
     setDadosGrafico(formatarDadosGrafico(dados))
