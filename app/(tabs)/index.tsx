@@ -174,8 +174,9 @@ const [saldo, setSaldo] = useState(0)
 const [categoriasSemRenda, setCategoriasSemRenda] = useState<IFinanceCategory[]>([] as IFinanceCategory[])
 
 const [intervalo, setIntervalo] = useState({
-  intervalo: 'Dia',
-  dataInicial: new Date()
+  nome: 'Semana',
+  dataInicial: new Date(),
+  dataFinal: new Date()
 })
 
 useEffect(() => {

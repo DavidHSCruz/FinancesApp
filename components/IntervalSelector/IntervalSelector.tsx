@@ -1,87 +1,62 @@
 import { colors } from "@/constants/colors"
 import { useState } from "react"
 import { Pressable, Text, View } from "react-native"
+import { FiltroSelected } from "./FiltroSelected/FiltroSelected"
 import { styles } from "./styles"
 
 interface IntervalSelectorProps {
     intervalo: IIntervalo,
-    setIntervalo: React.Dispatch<React.SetStateAction<{
-        intervalo: string,
-        dataInicial: Date
-    }>>
+    setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>
 }
 
 interface IIntervalo {
-    intervalo: string,
+    nome: string,
     dataInicial: Date
-}
-
-function formataDataBR(data: Date) {
-    return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
-}
-
-function formataPeriodoTexto(dataInicial: Date, dataFinal: Date) {
-    return `${formataDataBR(dataInicial)} - ${formataDataBR(dataFinal)}`
-}
-
-const FiltroSelected = ({intervalo, dataInicial} : IIntervalo) => {
-    const hoje = new Date()
-    const [data, setData] = useState(hoje)
-
-    if (intervalo !== 'Período' && intervalo !== 'Dia') {
-        return (
-            <View>
-                <Text style={styles.text}>{formataPeriodoTexto(dataInicial, data)}</Text>
-            </View>
-            )
-    }
-    if (intervalo === 'Dia') {
-        return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-                <Pressable 
-                    onPress={() => setData(new Date(data.getFullYear(), data.getMonth(), data.getDate() - 1))}
-                ><Text style={[styles.text, {paddingVertical: 5, paddingHorizontal: 10}]}>{'<'}</Text>
-                </Pressable>
-                <Text style={styles.text}>{formataDataBR(data)}</Text>
-                <Pressable 
-                    onPress={() => setData(new Date(data.getFullYear(), data.getMonth(), data.getDate() + 1))}
-                ><Text style={[styles.text, {paddingVertical: 5, paddingHorizontal: 10}]}>{'>'}</Text>
-                </Pressable>
-            </View>
-        )
-    }
-    return (
-        <View>
-            <Text style={styles.text}>{formataPeriodoTexto(dataInicial, data)}</Text>
-        </View>
-    )
+    dataFinal: Date
 }
 
 export const IntervalSelector = ({intervalo, setIntervalo}: IntervalSelectorProps) => {
     const hoje = new Date()
-    const intervalosSelector = {
-        Dia: hoje,
-        Semana: new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 7),
-        Mes: new Date(hoje.getFullYear(), hoje.getMonth() - 1, hoje.getDate()),
-        Ano: new Date(hoje.getFullYear() - 1, hoje.getMonth(), hoje.getDate()),
-        'Período': '',
-    }
+    const diaDaSemana = hoje.getDay()
+    const [intervalosDeDatas, setIntervalosDeDatas] = useState({
+        Dia: {
+            dataInicial: new Date(hoje),
+            dataFinal: new Date(hoje)
+        },
+        Semana: {
+            dataInicial: new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - diaDaSemana),
+            dataFinal: new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - diaDaSemana + 6)
+        },
+        'Mês': {
+            dataInicial: new Date(hoje.getFullYear(), hoje.getMonth(), 1),
+            dataFinal: new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0)
+        },
+        Ano: {
+            dataInicial: new Date(hoje.getFullYear(), 0, 1),
+            dataFinal: new Date(hoje.getFullYear(), 11, 31)
+        },
+        'Período': {
+            dataInicial: new Date(),
+            dataFinal: new Date()
+        },
+    })
 
     return (
         <>
             <View style={styles.container}>
-                {Object.keys(intervalosSelector).map((i, index) => {
-                    const data = Object.entries(intervalosSelector).find( intervaloSelecionado => intervaloSelecionado[0] === i)
+                {Object.keys(intervalosDeDatas).map((i, index) => {
+                    const data = Object.entries(intervalosDeDatas).find( intervaloSelecionado => intervaloSelecionado[0] === i)
                     if (data === undefined) return
                     return(
                         <Pressable 
                             key={index} 
-                            style={[styles.filtro, intervalo.intervalo === i && styles.filtroSelected]}
+                            style={[styles.filtro, intervalo.nome === i && styles.filtroSelected]}
                             onPress={() => {
 
                                 setIntervalo({
-                                    intervalo: i,
-                                    dataInicial: new Date(data[1].toString()),
+                                    nome: i,
+                                    dataInicial: new Date(data[1].dataInicial.toString()),
+                                    dataFinal: new Date(data[1].dataFinal.toString())
                                 })
 
                             }}
@@ -91,7 +66,7 @@ export const IntervalSelector = ({intervalo, setIntervalo}: IntervalSelectorProp
                     )
                 })}
             </View>
-            <FiltroSelected intervalo={intervalo.intervalo} dataInicial={intervalo.dataInicial} />
+            <FiltroSelected intervalo={intervalo} />
         </>
   )
 }

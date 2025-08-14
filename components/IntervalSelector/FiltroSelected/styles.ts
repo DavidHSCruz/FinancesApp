@@ -3,11 +3,10 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     container: {
+        flex: 1,
         flexDirection: 'row', 
-        justifyContent: 'space-around', 
-        alignItems: 'center', 
-        width: '100%', 
-        paddingBottom: 20
+        justifyContent: 'space-between',
+        width: '100%',
     },
     filtro: {
         padding: 5,
@@ -18,11 +17,6 @@ export const styles = StyleSheet.create({
         borderColor:colors.text
     },
     text: {
-        color:colors.text
+        color:colors.text,
     },
-    filtroContainer: {
-        flexDirection: 'row', 
-        justifyContent: 'space-between',
-        width: '100%' 
-    }
 })
