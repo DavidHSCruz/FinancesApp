@@ -1,24 +1,13 @@
 import { colors } from "@/constants/colors"
-import { useState } from "react"
 import { Pressable, Text, View } from "react-native"
 import { FiltroSelected } from "./FiltroSelected/FiltroSelected"
 import { styles } from "./styles"
+import { IntervaloSelector } from "@/types/intervalos"
 
-interface IntervalSelectorProps {
-    intervalo: IIntervalo,
-    setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>
-}
-
-interface IIntervalo {
-    nome: string,
-    dataInicial: Date
-    dataFinal: Date
-}
-
-export const IntervalSelector = ({intervalo, setIntervalo}: IntervalSelectorProps) => {
+export const IntervalSelector = ({intervalo, setIntervalo}: IntervaloSelector) => {
     const hoje = new Date()
     const diaDaSemana = hoje.getDay()
-    const [intervalosDeDatas, setIntervalosDeDatas] = useState({
+    const intervalosDeDatas = {
         Dia: {
             dataInicial: new Date(hoje),
             dataFinal: new Date(hoje)
@@ -39,7 +28,7 @@ export const IntervalSelector = ({intervalo, setIntervalo}: IntervalSelectorProp
             dataInicial: new Date(),
             dataFinal: new Date()
         },
-    })
+    }
 
     return (
         <>

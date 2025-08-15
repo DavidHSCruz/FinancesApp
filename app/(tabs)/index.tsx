@@ -6,6 +6,7 @@ import { colors } from "@/constants/colors"
 import { useDadosValue } from "@/context/dadosContext"
 import { IFinanceCategory } from "@/types/category"
 import { IDados } from "@/types/dados"
+import { IIntervalo } from "@/types/intervalos"
 import { IFinanceItem } from "@/types/Item"
 import { carregarDadosStorage } from "@/utils/carregaDados"
 import { useEffect, useState } from "react"
@@ -156,9 +157,29 @@ function selecionaDadosInvestimentosDespesas(dados: IDados) {
   return dados.items.filter(item => item.categoryID !== idDaRenda)
 }
 
+function selecionaItemsPorPeriodo(items: IFinanceItem[], intervalo: IIntervalo) {
+  const {dataInicial, dataFinal} = intervalo
+
+  return items.filter(item => {
+    let stringData = item.date + '/2025'
+    const [dia,mes,ano] = stringData.split('/')
+    stringData = `${ano}-${mes}-${dia}`
+    const dataItem = new Date(stringData)
+    const dataFormat = (dataItem.getDate() + 1) + '-' + (dataItem.getMonth() + 1) + '-' + dataItem.getFullYear()
+    const dataInicialFormat = (dataInicial.getDate()) + '-' + (dataInicial.getMonth() + 1) + '-' + dataInicial.getFullYear()
+    
+    if (dataInicial.toDateString() === dataFinal.toDateString()) {
+      console.log(dataFormat, dataInicialFormat)
+      return dataFormat === dataInicialFormat
+    }
+    return dataItem >= dataInicial && dataItem <= dataFinal
+  })
+}
+
 function formatarDadosGrafico(dados: IDados) {
   const itemsGrafico = selecionaDadosInvestimentosDespesas(dados)
-  const itemsPorTipo = separaItemsPorCategory(itemsGrafico)
+  const itemsPorPeriodo = selecionaItemsPorPeriodo(itemsGrafico, intervalo)
+  const itemsPorTipo = separaItemsPorCategory(itemsPorPeriodo)
   const valorPorTipo = somarValores(itemsPorTipo)
 
   return Object.entries(valorPorTipo).map(([tipo, valor]) => ({
@@ -174,7 +195,7 @@ const [saldo, setSaldo] = useState(0)
 const [categoriasSemRenda, setCategoriasSemRenda] = useState<IFinanceCategory[]>([] as IFinanceCategory[])
 
 const [intervalo, setIntervalo] = useState({
-  nome: 'Semana',
+  nome: 'Dia',
   dataInicial: new Date(),
   dataFinal: new Date()
 })
@@ -196,6 +217,12 @@ useEffect(() => {
     })
   }
 }, [dados])
+
+useEffect(() => {
+  if (dados.items && dados.items.length > 0 && dados.categories && dados.categories.length > 0) {
+    setDadosGrafico(formatarDadosGrafico(dados))
+  }
+}, [dados, intervalo])
 
   return (
     <SafeAreaView style={styles.container}>

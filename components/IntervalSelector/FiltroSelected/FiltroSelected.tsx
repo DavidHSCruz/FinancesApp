@@ -1,13 +1,8 @@
+import { IIntervalo, IntervaloSelector } from "@/types/intervalos"
 import { dataValidation } from "@/utils/validacoes"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Pressable, Text, TextInput, View } from "react-native"
 import { styles } from "./styles"
-
-interface IIntervalo {
-    nome: string,
-    dataInicial: Date
-    dataFinal: Date
-}
 
 function formataDataBR(data: Date) {
     return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
@@ -27,11 +22,13 @@ function calculaDiferencaDias(dataInicial: Date, dataFinal: Date) {
     return diferencaEmDias
 }
 
-const Filtro = ({intervalo: i, difDias}: {intervalo: IIntervalo, difDias: number}) => {
-    const [intervalo, setIntervalo] = useState(i)
-    useEffect(() => {
-        setIntervalo(i)
-    }, [i])
+interface FiltroProps {
+    intervalo: IIntervalo
+    setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>
+    difDias: number
+}
+
+const Filtro = ({intervalo, setIntervalo, difDias}: FiltroProps) => {
 
     let dias = 0, mes = 0, ano = 0
     if (difDias > 0 && difDias < 10) dias = difDias
@@ -65,7 +62,7 @@ const Filtro = ({intervalo: i, difDias}: {intervalo: IIntervalo, difDias: number
     )
 }
 
-const FiltroPeriodo = ({intervalo, setIntervalo}: {intervalo: IIntervalo, setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>}) => {
+const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
 
     const [intervaloInput, setIntervaloInput] = useState({dataInicial: '00/00/0000', dataFinal: '00/00/0000'})
 
@@ -125,9 +122,9 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: {intervalo: IIntervalo, setInt
     )
 }
 
-export const FiltroSelected = ({intervalo, setIntervalo} : {intervalo: IIntervalo, setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>}) => {
+export const FiltroSelected = ({intervalo, setIntervalo} : IntervaloSelector) => {
     const diferencaDeDias = calculaDiferencaDias(intervalo.dataInicial, intervalo.dataFinal)
 
     if (intervalo.nome === 'Período')  return <FiltroPeriodo intervalo={intervalo} setIntervalo={setIntervalo}/>
-    return <Filtro intervalo={intervalo} difDias={diferencaDeDias} />
+    return <Filtro intervalo={intervalo} setIntervalo={setIntervalo} difDias={diferencaDeDias} />
 }

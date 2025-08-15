@@ -1,4 +1,4 @@
-export function dataValidation(dia: string, mes: string, ano: string) {
+export function dataValidation(dia: string, mes: string, ano: string = '2025') {
     const anoQueEstamos = new Date().getFullYear()
 
     if (parseInt(mes) > 12 || parseInt(dia) > 31 || parseInt(ano) > anoQueEstamos || ano.length < 2 || ano.length === 3 || dia === undefined || mes === undefined) {
