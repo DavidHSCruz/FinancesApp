@@ -6,6 +6,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row', 
         justifyContent: 'space-between',
+        alignItems: 'center',
         width: '100%',
     },
     filtro: {
@@ -17,6 +18,7 @@ export const styles = StyleSheet.create({
         borderColor:colors.text
     },
     text: {
+        paddingVertical: 10,
         color:colors.text,
     },
 })

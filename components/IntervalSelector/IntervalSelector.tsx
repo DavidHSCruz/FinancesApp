@@ -66,7 +66,7 @@ export const IntervalSelector = ({intervalo, setIntervalo}: IntervalSelectorProp
                     )
                 })}
             </View>
-            <FiltroSelected intervalo={intervalo} />
+            <FiltroSelected intervalo={intervalo} setIntervalo={setIntervalo} />
         </>
   )
 }

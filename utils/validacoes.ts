@@ -1,5 +1,7 @@
-export function dataValidation(dia: string, mes: string) {
-    if (parseInt(mes) > 12 || parseInt(dia) > 31 || dia === undefined || mes === undefined) {
+export function dataValidation(dia: string, mes: string, ano: string) {
+    const anoQueEstamos = new Date().getFullYear()
+
+    if (parseInt(mes) > 12 || parseInt(dia) > 31 || parseInt(ano) > anoQueEstamos || ano.length < 2 || ano.length === 3 || dia === undefined || mes === undefined) {
         alert('Data inválida')
         return false
     }
