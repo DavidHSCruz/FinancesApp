@@ -1,26 +1,9 @@
 import { IIntervalo, IntervaloSelector } from "@/types/intervalos"
+import { formatarData } from "@/utils/formataData"
 import { dataValidation } from "@/utils/validacoes"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Pressable, Text, TextInput, View } from "react-native"
 import { styles } from "./styles"
-
-function formataDataBR(data: Date) {
-    return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
-}
-
-function formataPeriodoTexto(dataInicial: Date, dataFinal: Date) {
-    if (dataInicial.toString() === dataFinal.toString()) return formataDataBR(dataInicial)
-    return `${formataDataBR(dataInicial)} - ${formataDataBR(dataFinal)}`
-}
-
-function calculaDiferencaDias(dataInicial: Date, dataFinal: Date) {
-    const dataInicialUTC = new Date(dataInicial.getTime() + dataInicial.getTimezoneOffset() * 60000)
-    const dataFinalUTC = new Date(dataFinal.getTime() + dataFinal.getTimezoneOffset() * 60000)
-    const diferencaEmMilissegundos = dataFinalUTC.getTime() - dataInicialUTC.getTime()
-    let diferencaEmDias = diferencaEmMilissegundos / (1000 * 60 * 60 * 24)
-    if (diferencaEmDias === 0) diferencaEmDias = 1
-    return diferencaEmDias
-}
 
 interface FiltroProps {
     intervalo: IIntervalo
@@ -28,38 +11,21 @@ interface FiltroProps {
     difDias: number
 }
 
-const Filtro = ({intervalo, setIntervalo, difDias}: FiltroProps) => {
+interface SetaProps {
+    intervalo: IIntervalo
+    setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>
+    direcao: '<' | '>'
+    setPodeAvancar: React.Dispatch<React.SetStateAction<boolean>>
+}
 
-    let dias = 0, mes = 0, ano = 0
-    if (difDias > 0 && difDias < 10) dias = difDias
-    if (difDias >= 10 && difDias < 40) mes = 1
-    if (difDias >= 40) ano = 1
+function formataDataBR(data: string) {
+    return data.replace(/-/g, '/')
+}
 
-    return(
-        <View style={styles.container}>
-            <Pressable 
-                onPress={() => 
-                    setIntervalo({
-                        ...intervalo, 
-                        dataInicial: new Date(intervalo.dataInicial.getFullYear() - ano, intervalo.dataInicial.getMonth() - mes, intervalo.dataInicial.getDate() - dias), 
-                        dataFinal: new Date(intervalo.dataFinal.getFullYear() - ano, intervalo.dataFinal.getMonth() - mes, intervalo.dataFinal.getDate() - dias)
-                    })
-                }
-            ><Text style={[styles.text, {paddingVertical: 5, paddingHorizontal: 10}]}>{'<'}</Text>
-            </Pressable>
-            <Text style={styles.text}>{formataPeriodoTexto(intervalo.dataInicial, intervalo.dataFinal)}</Text>
-            <Pressable 
-                onPress={() => 
-                    setIntervalo({
-                        ...intervalo, 
-                        dataInicial: new Date(intervalo.dataInicial.getFullYear() + ano, intervalo.dataInicial.getMonth() + mes, intervalo.dataInicial.getDate() + dias), 
-                        dataFinal: new Date(intervalo.dataFinal.getFullYear() + ano, intervalo.dataFinal.getMonth() + mes, intervalo.dataFinal.getDate() + dias)
-                    })
-                }
-            ><Text style={[styles.text, {paddingVertical: 5, paddingHorizontal: 10}]}>{'>'}</Text>
-            </Pressable>
-        </View>
-    )
+function formataPeriodoTexto(di: string, df: string) {
+    if (di === df) return formataDataBR(di)
+
+    return `${formataDataBR(di)} - ${formataDataBR(df)}`
 }
 
 const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
@@ -95,8 +61,8 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
                         
                         dataValidation(dia, mes, ano)
                         const dataFormatada = [dia, mes, ano].filter(Boolean).join('/')
-                        setIntervalo({ ...intervalo, dataInicial: new Date(dataFormatada) })
-                        setIntervaloInput({ ...intervaloInput, dataInicial: dataFormatada })
+                        //setIntervalo({ ...intervalo, dataInicial: dataFormatada })
+                        //setIntervaloInput({ ...intervaloInput, dataInicial: dataFormatada })
                     }}
                     value={intervaloInput.dataInicial} />
                 <Text style={styles.text}>-</Text>
@@ -112,8 +78,8 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
 
                         dataValidation(dia, mes, ano)
                         const dataFormatada = [dia, mes, ano].filter(Boolean).join('/')
-                        setIntervalo({ ...intervalo, dataFinal: new Date(dataFormatada) })
-                        setIntervaloInput({ ...intervaloInput, dataFinal: dataFormatada })
+                        //setIntervalo({ ...intervalo, dataFinal: dataFormatada })
+                        //setIntervaloInput({ ...intervaloInput, dataFinal: dataFormatada })
                     }}
                     value={intervaloInput.dataFinal} />
             </View>
@@ -122,9 +88,146 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
     )
 }
 
-export const FiltroSelected = ({intervalo, setIntervalo} : IntervaloSelector) => {
-    const diferencaDeDias = calculaDiferencaDias(intervalo.dataInicial, intervalo.dataFinal)
+const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => {
+    const { nome: tipo } = intervalo
 
-    if (intervalo.nome === 'Período')  return <FiltroPeriodo intervalo={intervalo} setIntervalo={setIntervalo}/>
-    return <Filtro intervalo={intervalo} setIntervalo={setIntervalo} difDias={diferencaDeDias} />
+    function adicionar(i: string, dataFinal = false) {
+        const [ dia, mes, ano ] = i.split('-').map(Number)
+        let novaData
+
+        if (!dataFinal) {
+            switch (tipo) {
+                case 'Semana':
+                    novaData = new Date(ano, mes - 1, dia + 7)
+                    return formatarData(novaData)
+                case 'Mês':
+                    novaData = new Date(ano, mes, 1)
+                    return formatarData(novaData)
+                case 'Ano':
+                    novaData = new Date(ano + 1, 0, 1)
+                    return formatarData(novaData)
+                default:
+                    novaData = new Date(ano, mes - 1, dia + 1)
+                    return formatarData(novaData)
+        }}else {
+            const [ diaI, mesI, anoI ] = intervalo.dataInicial.split('-').map(Number)
+            switch (tipo) {
+                case 'Semana':
+                    novaData = new Date(anoI, mesI - 1, diaI + 13)
+                    return formatarData(novaData)
+                case 'Mês':
+                    novaData = new Date(anoI, mesI + 1, 0)
+                    return formatarData(novaData)
+                case 'Ano':
+                    novaData = new Date(anoI + 1, 12, 0)
+                    return formatarData(novaData)
+                default:
+                    novaData = new Date(anoI, mesI - 1, diaI + 1)
+                    return formatarData(novaData)
+        }}
+    }
+
+    function subtrair(i: string, dataFinal = false) {
+        const [ dia, mes, ano ] = i.split('-').map(Number)
+        let novaData
+
+        if (!dataFinal) {
+            switch (tipo) {
+                case 'Semana':
+                    novaData = new Date(ano, mes - 1, dia - 7)
+                    return formatarData(novaData)
+                case 'Mês':
+                    novaData = new Date(ano, mes - 2, 1)
+                    return formatarData(novaData)
+                case 'Ano':
+                    novaData = new Date(ano - 1, 0, 1)
+                    return formatarData(novaData)
+                default:
+                    novaData = new Date(ano, mes - 1, dia - 1)
+                    return formatarData(novaData)
+        }}else {
+            const [ diaI, mesI, anoI ] = intervalo.dataInicial.split('-').map(Number)
+            switch (tipo) {
+                case 'Semana':
+                    novaData = new Date(anoI, mesI - 1, diaI - 1)
+                    return formatarData(novaData)
+                case 'Mês':
+                    novaData = new Date(anoI, mesI - 1, 0)
+                    return formatarData(novaData)
+                case 'Ano':
+                    novaData = new Date(anoI - 1, 12, 0)
+                    return formatarData(novaData)
+                default:
+                    novaData = new Date(anoI, mesI - 1, diaI - 1)
+                    return formatarData(novaData)
+        }}
+    }
+    
+    function mudarData() {
+        if (direcao === '>') {
+            setIntervalo({
+                ...intervalo, 
+                dataInicial: adicionar(intervalo.dataInicial),
+                dataFinal: adicionar(intervalo.dataFinal, true)
+            })
+        }else {
+            setIntervalo({
+                ...intervalo, 
+                dataInicial: subtrair(intervalo.dataInicial),
+                dataFinal: subtrair(intervalo.dataFinal, true)
+            })
+            setPodeAvancar(true)
+        }
+    }
+
+    return (
+        <Pressable 
+            onPress={ e => mudarData() }
+        ><Text style={[styles.text, {paddingVertical: 5, paddingHorizontal: 10}]}>{direcao}</Text>
+        </Pressable>
+    )
+}
+
+export const FiltroSelected = ({intervalo, setIntervalo} : IntervaloSelector) => {
+    const [podeAvancar, setPodeAvancar] = useState(true)
+    
+    useEffect(() => {
+        if (intervalo.dataInicial === intervalo.dataFinal) setPodeAvancar(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
+        const [ diaF, mesF, anoF ] = intervalo.dataFinal.split('-').map(Number)
+        const dataFinal = new Date(anoF, mesF - 1, diaF)
+        const dataHoje = new Date()
+
+        if (dataFinal.getDate() >= dataHoje.getDate() &&
+            dataFinal.getMonth() >= dataHoje.getMonth() &&
+            dataFinal.getFullYear() >= dataHoje.getFullYear()
+        ) {
+            setPodeAvancar(false)
+        }
+    }, [intervalo])
+    
+    return (
+        <View style={styles.container}>
+            <Seta 
+                intervalo={intervalo} 
+                setIntervalo={setIntervalo} 
+                direcao='<'
+                setPodeAvancar={setPodeAvancar}
+            />
+            <Text style={styles.text}>{formataPeriodoTexto(intervalo.dataInicial, intervalo.dataFinal)}</Text>
+            {podeAvancar ? 
+                <Seta 
+                    intervalo={intervalo} 
+                    setIntervalo={setIntervalo} 
+                    direcao='>'
+                    setPodeAvancar={setPodeAvancar}
+                />
+            :   <Text style={{paddingHorizontal: 12}}></Text>
+            }
+        </View>
+    )
+    
 }

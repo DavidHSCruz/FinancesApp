@@ -1,33 +1,37 @@
 import { colors } from "@/constants/colors"
+import { IntervaloSelector } from "@/types/intervalos"
+import { formatarData } from "@/utils/formataData"
 import { Pressable, Text, View } from "react-native"
 import { FiltroSelected } from "./FiltroSelected/FiltroSelected"
 import { styles } from "./styles"
-import { IntervaloSelector } from "@/types/intervalos"
 
 export const IntervalSelector = ({intervalo, setIntervalo}: IntervaloSelector) => {
     const hoje = new Date()
-    const diaDaSemana = hoje.getDay()
+    const hojeStr = hoje.toISOString().split('T')[0]
+    const [ ano, mes, dia ] = hojeStr.split('-').map(Number)
+    const diaDaSemana = new Date(hoje).getDay()
+
     const intervalosDeDatas = {
         Dia: {
-            dataInicial: new Date(hoje),
-            dataFinal: new Date(hoje)
+            dataInicial: formatarData(hoje),
+            dataFinal: formatarData(hoje)
         },
         Semana: {
-            dataInicial: new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - diaDaSemana),
-            dataFinal: new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - diaDaSemana + 6)
+            dataInicial: formatarData(new Date(ano, mes - 1, dia - diaDaSemana)),
+            dataFinal: formatarData(hoje)
         },
-        'Mês': {
-            dataInicial: new Date(hoje.getFullYear(), hoje.getMonth(), 1),
-            dataFinal: new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0)
+        Mês: {
+            dataInicial: formatarData(new Date(ano, mes - 1, 1)),
+            dataFinal: formatarData(hoje)
         },
         Ano: {
-            dataInicial: new Date(hoje.getFullYear(), 0, 1),
-            dataFinal: new Date(hoje.getFullYear(), 11, 31)
+            dataInicial: formatarData(new Date(ano, 0, 1)),
+            dataFinal: formatarData(hoje)
         },
-        'Período': {
-            dataInicial: new Date(),
-            dataFinal: new Date()
-        },
+        Período: {
+            dataInicial: '',
+            dataFinal: ''
+        }
     }
 
     return (
@@ -44,8 +48,8 @@ export const IntervalSelector = ({intervalo, setIntervalo}: IntervaloSelector) =
 
                                 setIntervalo({
                                     nome: i,
-                                    dataInicial: new Date(data[1].dataInicial.toString()),
-                                    dataFinal: new Date(data[1].dataFinal.toString())
+                                    dataInicial: data[1].dataInicial,
+                                    dataFinal: data[1].dataFinal
                                 })
 
                             }}

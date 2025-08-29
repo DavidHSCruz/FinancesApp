@@ -5,6 +5,6 @@ export interface IntervaloSelector {
 
 export interface IIntervalo {
     nome: string,
-    dataInicial: Date
-    dataFinal: Date
+    dataInicial: string
+    dataFinal: string
 }

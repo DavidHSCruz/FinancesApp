@@ -29,7 +29,7 @@ export default function addNewItem(
   const value = valorValidation(newItemAtualizado.value.toString())
   if (!data || !nome || !value) return
 
-  newItemAtualizado.date = `${dia}/${mes}`
+  newItemAtualizado.date = `${dia}-${mes}`
   newItemAtualizado.value = valorFormatadoDB(newItemAtualizado.value.toString())
 
   const newList = [...items, newItemAtualizado]

@@ -102,18 +102,19 @@ const CHAVES_STORAGE = {
   CATEGORIES: '@finance:categories',
 } as const
 
-async function carregarDados() {
-    const valoresStorage = Object.values(CHAVES_STORAGE)
-    const itensCarregados = await carregarDadosStorage(valoresStorage)
-    const [ items, categories ] = itensCarregados
-    setDados({
-        items: items || [],
-        categories: categories || []
-    })
-}
 
 useEffect(() => {
+  async function carregarDados() {
+      const valoresStorage = Object.values(CHAVES_STORAGE)
+      const itensCarregados = await carregarDadosStorage(valoresStorage)
+      const [ items, categories ] = itensCarregados
+      setDados({
+          items: items || [],
+          categories: categories || []
+      })
+  }
   carregarDados()
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
 
 const CORES_POR_TIPO = {
@@ -158,20 +159,19 @@ function selecionaDadosInvestimentosDespesas(dados: IDados) {
 }
 
 function selecionaItemsPorPeriodo(items: IFinanceItem[], intervalo: IIntervalo) {
-  const {dataInicial, dataFinal} = intervalo
+  const { dataInicial, dataFinal } = intervalo
+  const [ diaI, mesI, anoI ] = dataInicial.split('-').map(Number)
 
   return items.filter(item => {
-    let stringData = item.date + '/2025'
-    const [dia,mes,ano] = stringData.split('/')
-    stringData = `${ano}-${mes}-${dia}`
-    const dataItem = new Date(stringData)
-    const dataFormat = (dataItem.getDate() + 1) + '-' + (dataItem.getMonth() + 1) + '-' + dataItem.getFullYear()
-    const dataInicialFormat = (dataInicial.getDate()) + '-' + (dataInicial.getMonth() + 1) + '-' + dataInicial.getFullYear()
+    const dataItem = `${item.date}-2025`
+    const [ dia, mes, ano ] = dataItem.split('/').map(Number)
+    const dataItemFormat = `${dia}-${mes}-${ano}`
+    const dataInicialFormat = `${diaI}-${mesI}-${anoI}`
     
-    if (dataInicial.toDateString() === dataFinal.toDateString()) {
-      console.log(dataFormat, dataInicialFormat)
-      return dataFormat === dataInicialFormat
+    if (dataInicial === dataFinal) {
+      return dataItemFormat === dataInicialFormat
     }
+    
     return dataItem >= dataInicial && dataItem <= dataFinal
   })
 }
@@ -194,10 +194,11 @@ const [dadosGrafico, setDadosGrafico] = useState<any>([])
 const [saldo, setSaldo] = useState(0)
 const [categoriasSemRenda, setCategoriasSemRenda] = useState<IFinanceCategory[]>([] as IFinanceCategory[])
 
+const ano = new Date().getFullYear()
 const [intervalo, setIntervalo] = useState({
-  nome: 'Dia',
-  dataInicial: new Date(),
-  dataFinal: new Date()
+  nome: 'Ano',
+  dataInicial: `01-01-${ano}`,
+  dataFinal: `31-12-${ano}`
 })
 
 useEffect(() => {
@@ -216,12 +217,14 @@ useEffect(() => {
       return categoriasUtilizadas
     })
   }
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [dados])
 
 useEffect(() => {
   if (dados.items && dados.items.length > 0 && dados.categories && dados.categories.length > 0) {
     setDadosGrafico(formatarDadosGrafico(dados))
   }
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [dados, intervalo])
 
   return (
