@@ -8,7 +8,8 @@ import { styles } from "./styles"
 interface FiltroProps {
     intervalo: IIntervalo
     setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>
-    difDias: number
+    podeAvancar: boolean
+    setPodeAvancar: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 interface SetaProps {
@@ -45,43 +46,39 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
         return {dia, mes, ano}
     }
 
+    function inputBlur(dataInicial: boolean) {
+        const {dia, mes, ano} = handleData(intervaloInput.dataInicial)
+                        
+        dataValidation(dia, mes, ano)
+        const dataFormatada = [dia, mes, ano].filter(Boolean).join('/')
+
+        setIntervalo({ ...intervalo, [dataInicial ? 'dataInicial' : 'dataFinal']: dataFormatada })
+    }
+
+    function handleChange(e: string, dataInicial: boolean) {
+        let numeros = e.replace(/\D/g, '')
+        numeros = numeros.substring(0, 8)
+
+        setIntervaloInput({ ...intervalo, [dataInicial ? 'dataInicial' : 'dataFinal']: numeros })
+    }
+
     return(
         <View style={styles.container}>
             <Text></Text>
             <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                <TextInput 
-                    style={styles.text} 
-                    onChange={e => {
-                        let numeros = e.nativeEvent.text.replace(/\D/g, '')
-                        numeros = numeros.substring(0, 8)
-                        setIntervaloInput({ ...intervaloInput, dataInicial: numeros })
-                    }}
-                    onBlur={e => {
-                        const {dia, mes, ano} = handleData(intervaloInput.dataInicial)
-                        
-                        dataValidation(dia, mes, ano)
-                        const dataFormatada = [dia, mes, ano].filter(Boolean).join('/')
-                        //setIntervalo({ ...intervalo, dataInicial: dataFormatada })
-                        //setIntervaloInput({ ...intervaloInput, dataInicial: dataFormatada })
-                    }}
-                    value={intervaloInput.dataInicial} />
+                <TextInput
+                    style={styles.text}
+                    onChange={e => handleChange(e.nativeEvent.text, true)}
+                    onBlur={e => inputBlur(true)}
+                    value={intervaloInput.dataInicial}
+                />
                 <Text style={styles.text}>-</Text>
-                <TextInput 
-                    style={styles.text} 
-                    onChange={e => {
-                        let numeros = e.nativeEvent.text.replace(/\D/g, '')
-                        numeros = numeros.substring(0, 8)
-                        setIntervaloInput({ ...intervaloInput, dataFinal: numeros })
-                    }}
-                    onBlur={e => {
-                        const {dia, mes, ano} = handleData(intervaloInput.dataFinal)
-
-                        dataValidation(dia, mes, ano)
-                        const dataFormatada = [dia, mes, ano].filter(Boolean).join('/')
-                        //setIntervalo({ ...intervalo, dataFinal: dataFormatada })
-                        //setIntervaloInput({ ...intervaloInput, dataFinal: dataFormatada })
-                    }}
-                    value={intervaloInput.dataFinal} />
+                <TextInput
+                    style={styles.text}
+                    onChange={e => handleChange(e.nativeEvent.text, false)}
+                    onBlur={e => inputBlur(false)}
+                    value={intervaloInput.dataFinal}
+                />
             </View>
             <Text></Text>
         </View>
@@ -188,6 +185,29 @@ const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => 
     )
 }
 
+const Filtro = ({intervalo, setIntervalo, podeAvancar, setPodeAvancar} : FiltroProps) => {
+    return (
+        <>
+            <Seta
+                intervalo={intervalo}
+                setIntervalo={setIntervalo}
+                direcao='<'
+                setPodeAvancar={setPodeAvancar}
+            />
+            <Text style={styles.text}>{formataPeriodoTexto(intervalo.dataInicial, intervalo.dataFinal)}</Text>
+            {podeAvancar ?
+                <Seta
+                    intervalo={intervalo}
+                    setIntervalo={setIntervalo}
+                    direcao='>'
+                    setPodeAvancar={setPodeAvancar}
+                />
+            :   <Text style={{paddingHorizontal: 12}}></Text>
+            }
+        </>
+    )
+}
+
 export const FiltroSelected = ({intervalo, setIntervalo} : IntervaloSelector) => {
     const [podeAvancar, setPodeAvancar] = useState(true)
     
@@ -211,21 +231,17 @@ export const FiltroSelected = ({intervalo, setIntervalo} : IntervaloSelector) =>
     
     return (
         <View style={styles.container}>
-            <Seta 
-                intervalo={intervalo} 
-                setIntervalo={setIntervalo} 
-                direcao='<'
-                setPodeAvancar={setPodeAvancar}
-            />
-            <Text style={styles.text}>{formataPeriodoTexto(intervalo.dataInicial, intervalo.dataFinal)}</Text>
-            {podeAvancar ? 
-                <Seta 
-                    intervalo={intervalo} 
-                    setIntervalo={setIntervalo} 
-                    direcao='>'
+            {intervalo.nome === 'Período' ?
+                <FiltroPeriodo
+                    intervalo={intervalo}
+                    setIntervalo={setIntervalo}
+                />
+            :   <Filtro
+                    intervalo={intervalo}
+                    setIntervalo={setIntervalo}
+                    podeAvancar={podeAvancar}
                     setPodeAvancar={setPodeAvancar}
                 />
-            :   <Text style={{paddingHorizontal: 12}}></Text>
             }
         </View>
     )
