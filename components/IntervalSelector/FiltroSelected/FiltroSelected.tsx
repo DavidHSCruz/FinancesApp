@@ -1,3 +1,4 @@
+import { colors } from "@/constants/colors"
 import { IIntervalo, IntervaloSelector } from "@/types/intervalos"
 import { formatarData } from "@/utils/formataData"
 import { dataValidation } from "@/utils/validacoes"
@@ -30,8 +31,7 @@ function formataPeriodoTexto(di: string, df: string) {
 }
 
 const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
-
-    const [intervaloInput, setIntervaloInput] = useState({dataInicial: '00/00/0000', dataFinal: '00/00/0000'})
+    const [intervaloInput, setIntervaloInput] = useState<IIntervalo>({} as IIntervalo)
 
     function handleData(e: string) {
         let numeros = e.replace(/\D/g, '')
@@ -47,19 +47,22 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
     }
 
     function inputBlur(dataInicial: boolean) {
-        const {dia, mes, ano} = handleData(intervaloInput.dataInicial)
+        const dataUtilizada = dataInicial ? intervaloInput.dataInicial : intervaloInput.dataFinal
+        const {dia, mes, ano} = handleData(dataUtilizada)
                         
         dataValidation(dia, mes, ano)
-        const dataFormatada = [dia, mes, ano].filter(Boolean).join('/')
+        const dataFormatInput = [dia, mes, ano].filter(Boolean).join('/')
+        const dataFormatada = new Date(Number(ano), Number(mes) - 1, Number(dia))
 
-        setIntervalo({ ...intervalo, [dataInicial ? 'dataInicial' : 'dataFinal']: dataFormatada })
+        setIntervalo({ ...intervalo, [dataInicial ? 'dataInicial' : 'dataFinal']: formatarData(dataFormatada) })
+        setIntervaloInput({ ...intervaloInput, [dataInicial ? 'dataInicial' : 'dataFinal']: dataFormatInput })
     }
 
     function handleChange(e: string, dataInicial: boolean) {
         let numeros = e.replace(/\D/g, '')
         numeros = numeros.substring(0, 8)
 
-        setIntervaloInput({ ...intervalo, [dataInicial ? 'dataInicial' : 'dataFinal']: numeros })
+        setIntervaloInput({ ...intervaloInput, [dataInicial ? 'dataInicial' : 'dataFinal']: numeros })
     }
 
     return(
@@ -69,14 +72,18 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
                 <TextInput
                     style={styles.text}
                     onChange={e => handleChange(e.nativeEvent.text, true)}
-                    onBlur={e => inputBlur(true)}
+                    onBlur={e => intervaloInput.dataInicial !== '' && inputBlur(true)}
+                    placeholder="DD/MM/AAAA"
+                    placeholderTextColor={colors.placeholder}
                     value={intervaloInput.dataInicial}
                 />
                 <Text style={styles.text}>-</Text>
                 <TextInput
                     style={styles.text}
                     onChange={e => handleChange(e.nativeEvent.text, false)}
-                    onBlur={e => inputBlur(false)}
+                    onBlur={e => intervaloInput.dataFinal !== '' && inputBlur(false)}
+                    placeholder="DD/MM/AAAA"
+                    placeholderTextColor={colors.placeholder}
                     value={intervaloInput.dataFinal}
                 />
             </View>

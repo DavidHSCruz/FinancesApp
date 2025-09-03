@@ -20,5 +20,5 @@ export const styles = StyleSheet.create({
     text: {
         paddingVertical: 10,
         color:colors.text,
-    },
+    }
 })
