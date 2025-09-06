@@ -39,5 +39,17 @@ export const styles = StyleSheet.create({
   containerResumo: {
     width: "90%",
     gap: 20,
+  },
+  titulo: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: colors.text,
+  },
+  titulosContainer: {
+    width: '100%', 
+    marginBottom: 10, 
+    borderBottomWidth: .5, 
+    borderBottomColor: colors.placeholder
   }
 })

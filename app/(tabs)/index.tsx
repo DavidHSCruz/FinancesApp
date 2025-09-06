@@ -1,7 +1,7 @@
-import { DadoContainer } from "@/components/DadoContainer/DadoContainer"
 import DonutChart from "@/components/GraficoDonut/DonutChart"
 import { IntervalSelector } from "@/components/IntervalSelector/IntervalSelector"
 import { MenuAddButton } from "@/components/MenuAddButton/MenuAddButton"
+import TiposPorCategoria from "@/components/TiposPorCategoria/TiposPorCategoria"
 import { colors } from "@/constants/colors"
 import { useDadosValue } from "@/context/dadosContext"
 import { styles } from "@/styles"
@@ -155,11 +155,11 @@ export default function Index() {
     }))
   }
 
-  function selecionaDadosInvestimentosDespesas(dados: IDados) {
-    const idDaRenda = dados.categories.find(category => category.nome === 'renda')?.id
+  // function selecionaDadosInvestimentosDespesas(dados: IDados) {
+  //   const idDaRenda = dados.categories.find(category => category.nome === 'renda')?.id
     
-    return dados.items.filter(item => item.categoryID !== idDaRenda)
-  }
+  //   return dados.items.filter(item => item.categoryID !== idDaRenda)
+  // }
 
   function selecionaItemsPorPeriodo(items: IFinanceItem[], intervalo: IIntervalo) {
     const { dataInicial, dataFinal } = intervalo
@@ -186,8 +186,8 @@ export default function Index() {
   }
 
   function formatarDadosGrafico(dados: IDados) {
-    const itemsGrafico = selecionaDadosInvestimentosDespesas(dados)
-    const itemsPorPeriodo = selecionaItemsPorPeriodo(itemsGrafico, intervalo)
+    //const itemsGrafico = selecionaDadosInvestimentosDespesas(dados)
+    const itemsPorPeriodo = selecionaItemsPorPeriodo(dados.items, intervalo)
     const itemsPorTipo = separaItemsPorCategory(itemsPorPeriodo)
     const valorPorTipo = somarValores(itemsPorTipo)
 
@@ -244,18 +244,15 @@ export default function Index() {
         <View style={{marginTop: -40, alignItems: 'center'}}>
           <View style={styles.containerResumo}>
             <View style={styles.containerGrafico}>
+              <View style={styles.titulosContainer}>
+                <Text style={styles.titulo}>Resumo</Text>
+              </View>
               <IntervalSelector intervalo={intervalo} setIntervalo={setIntervalo}/>
               <DonutChart data={dadosGrafico}>
                 {formatarBRL(saldo)}
               </DonutChart> 
             </View>
-            {categoriasSemRenda.map((category, index) => (
-                <DadoContainer 
-                  key={index} 
-                  category={category} 
-                  cor={CORES_POR_TIPO[category.nome as keyof typeof CORES_POR_TIPO]} />
-              ))
-            }
+            <TiposPorCategoria categoriasSemRenda={categoriasSemRenda} CORES_POR_TIPO={CORES_POR_TIPO} />
           </View>
         </View>
       </ScrollView>
