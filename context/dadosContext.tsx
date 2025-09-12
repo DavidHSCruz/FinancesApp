@@ -1,11 +1,5 @@
-import { IFinanceItem } from "@/types/Item"
-import { IFinanceCategory } from "@/types/category"
+import { IDados } from "@/types/dados"
 import { createContext, useContext, useState } from "react"
-
-interface IDados {
-    items: IFinanceItem[]
-    categories: IFinanceCategory[]
-}
 
 interface IDadosContext {
     dados: IDados

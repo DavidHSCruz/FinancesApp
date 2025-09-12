@@ -1,14 +1,28 @@
 export const colors = {
-    primary: '#2275e3',
-    secondary: '#d9d9d9',
-    bg1: '#1e1e1e',
-    bg2: '#1b1b1b',
-    text: '#fafafa',
-    placeholder: '#888888',
-    error: '#e3401c',
-    renda: '#16a116',
-    despesa: '#db3513',
-    investimento: '#1357df',
-    actionRed: '#e3401c',
-    actionOrange: '#e3801c',
+  light: {
+    background: "#F9FAFB",
+    surface: "#FFFFFF",
+    textPrimary: "#111827",
+    textSecondary: "#6B7280",
+    border: "#E5E7EB",
+    action: "#2563EB",
+    renda: "#16A34A",
+    despesa: "#DC2626",
+    investimento: "#2563EB",
+    warning: "#F59E0B",
+    placeholder: "#9CA3AF"
+  },
+  dark: {
+    background: "#111827",
+    surface: "#1F2937",
+    textPrimary: "#F9FAFB",
+    textSecondary: "#9CA3AF",
+    border: "#374151",
+    action: "#3B82F6",
+    renda: "#22C55E",
+    despesa: "#EF4444",
+    investimento: "#3B82F6",
+    warning: "#FACC15",
+    placeholder: "#6B7280"
+  }
 }

@@ -21,7 +21,6 @@ const TiposPorCategoria = ({categoriasSemRenda, CORES_POR_TIPO}: TiposPorCategor
     meses = meses.map(mes => mes.charAt(0).toUpperCase() + mes.slice(1))
     const dez = meses.slice(0, 1)
     meses = meses.slice(1).concat(dez)
-    console.log(meses)
 
     const hoje = new Date();
     const mesAtual = hoje.toLocaleString("pt-BR", { month: "long" })

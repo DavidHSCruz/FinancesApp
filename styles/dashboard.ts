@@ -1,20 +1,16 @@
-import { colors } from "@/constants/colors"
 import { StyleSheet } from "react-native"
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg1,
   },
   containerSaldo: {
-    backgroundColor: colors.primary,
     height: 120,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     alignItems: "center",
   },
   saldo: {
-    color: colors.text,
     paddingBottom: 20,
     paddingTop: 30,
     fontSize: 20,
@@ -22,7 +18,6 @@ export const styles = StyleSheet.create({
     textAlign: "center"
   },
   containerGrafico: {
-    backgroundColor: colors.bg2,
     padding: 20,
     borderRadius: 20,
     alignItems: "center",
@@ -33,9 +28,6 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
-  text: {
-    color:colors.text
-  },
   containerResumo: {
     width: "90%",
     gap: 20,
@@ -44,12 +36,10 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    color: colors.text,
   },
   titulosContainer: {
     width: '100%', 
     marginBottom: 10, 
-    borderBottomWidth: .5, 
-    borderBottomColor: colors.placeholder
+    borderBottomWidth: .5,
   }
 })
