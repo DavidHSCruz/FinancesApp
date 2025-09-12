@@ -2,13 +2,13 @@ import { useThemeColors } from "@/hooks/useThemeColors"
 import { styles } from "@/styles/dashboard"
 import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
 import { useEffect, useMemo, useState } from "react"
-import { SafeAreaView, ScrollView, Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 
 
 import DonutChart from "@/components/GraficoDonut/DonutChart"
 import { IntervalSelector } from "@/components/IntervalSelector/IntervalSelector"
+import { TranslacoesResume } from "@/components/TranslacoesResume/TranslacoesResume"
 import { useDadosValue } from "@/context/dadosContext"
-import { IFinanceCategory } from "@/types/category"
 import { carregarDadosStorage } from "@/utils/carregaDados"
 
 export default function Home() {
@@ -93,8 +93,6 @@ export default function Home() {
   //   ]))
   // }, [])
 
-  const [categoriasSemRenda, setCategoriasSemRenda] = useState<IFinanceCategory[]>([])
-
   const ano = new Date().getFullYear()
   const [intervalo, setIntervalo] = useState({
     nome: "Ano",
@@ -158,10 +156,16 @@ export default function Home() {
       { name: "Investimentos", value: totalInvestimento, valueReais: valorFormatadoBR(totalInvestimento), color: theme.investimento }
     ]
   }, [dados, theme, totais])
+
+  const translacoes = useMemo(() => {
+    if (!dados.items || !dados.categories) return []
+    const catRendaId = dados.categories.find(categoria => categoria.nome === "renda")?.id
+
+    return dados.items.filter(translacao => translacao.categoryID !== catRendaId)
+  }, [dados])
   
 
   return (
-    <SafeAreaView style={{ ...styles.container, backgroundColor: theme.background }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 150 }}>
         <View style={{ ...styles.containerSaldo, backgroundColor: theme.action }}>
           <Text style={{ ...styles.saldo, color: theme.background }}>
@@ -169,22 +173,20 @@ export default function Home() {
           </Text>
         </View>
 
-        <View style={{ marginTop: -40, alignItems: "center" }}>
-          <View style={styles.containerResumo}>
-            <View style={{ ...styles.containerGrafico, backgroundColor: theme.surface }}>
-              <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
-                <Text style={{ ...styles.titulo, color: theme.textPrimary }}>Resumo</Text>
-              </View>
+        <View style={{ marginTop: -40, alignItems: "center", gap: 20 }}>
+          <View style={{ ...styles.containerSurface, backgroundColor: theme.surface }}>
 
-              <IntervalSelector intervalo={intervalo} setIntervalo={setIntervalo} />
-
-              <DonutChart data={dadosGrafico || []}>
-                {valorFormatadoBR(totais?.totalSaldo || 0)}
-              </DonutChart>
+            <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
+              <Text style={{ ...styles.titulo, color: theme.textPrimary }}>Resumo</Text>
             </View>
+            <IntervalSelector intervalo={intervalo} setIntervalo={setIntervalo} />
+            <DonutChart data={dadosGrafico || []}>
+              {valorFormatadoBR(totais?.totalSaldo || 0)}
+            </DonutChart>
+
           </View>
+          <TranslacoesResume translacoes={translacoes} categories={dados.categories} />
         </View>
       </ScrollView>
-    </SafeAreaView>
   )
 }

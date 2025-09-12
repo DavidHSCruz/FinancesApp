@@ -1,9 +1,6 @@
 import { StyleSheet } from "react-native"
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   containerSaldo: {
     height: 120,
     borderBottomLeftRadius: 30,
@@ -17,8 +14,9 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center"
   },
-  containerGrafico: {
+  containerSurface: {
     padding: 20,
+    width: '90%',
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
@@ -27,10 +25,6 @@ export const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowRadius: 8,
-  },
-  containerResumo: {
-    width: "90%",
-    gap: 20,
   },
   titulo: {
     fontSize: 18,
