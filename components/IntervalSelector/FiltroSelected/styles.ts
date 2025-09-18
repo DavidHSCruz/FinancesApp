@@ -1,4 +1,3 @@
-import { colors } from "@/constants/colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -8,17 +7,5 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
-    },
-    filtro: {
-        padding: 5,
-        borderRadius: 5
-    },
-    filtroSelected: {
-        borderBottomWidth: 1,
-        borderColor:colors.text
-    },
-    text: {
-        paddingVertical: 10,
-        color:colors.text,
     }
 })

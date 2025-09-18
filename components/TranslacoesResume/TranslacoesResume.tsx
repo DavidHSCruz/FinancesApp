@@ -1,16 +1,36 @@
 import { useThemeColors } from "@/hooks/useThemeColors"
 import { IFinanceCategory } from "@/types/category"
+import { IIntervalo } from "@/types/intervalos"
 import { IFinanceItem } from "@/types/Item"
 import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
-import { formatarDataBR } from "@/utils/formataData"
+import { formatarDataBR, getDiaMesAno } from "@/utils/formataData"
 import { Text, View } from "react-native"
 import { styles } from "./styles"
 
-export const TranslacoesResume = ({translacoes, categories}: {translacoes: IFinanceItem[], categories: IFinanceCategory[]}) => {
+interface TranslacoesResumeProps {
+    translacoes: IFinanceItem[]
+    categories: IFinanceCategory[]
+    intervalo: IIntervalo
+}
+
+export const TranslacoesResume = ({translacoes, categories, intervalo}: TranslacoesResumeProps) => {
     const theme = useThemeColors()
+
+    const translacoesPorIntervalo = translacoes.filter(t => {
+        const [ano, mes, dia] = t.date.split('-')
+        const tDate = getDiaMesAno(`${dia}-${mes}-${ano}`)
+        const dateI = getDiaMesAno(intervalo.dataInicial)
+        const dateF = getDiaMesAno(intervalo.dataFinal)
+        const tDateTime = new Date(tDate.ano, tDate.mes, tDate.dia).getTime()
+        const dateITime = new Date(dateI.ano, dateI.mes, dateI.dia).getTime()
+        const dateFTime = new Date(dateF.ano, dateF.mes, dateF.dia).getTime()
+
+        return tDateTime >= dateITime && tDateTime <= dateFTime
+    })
+    
     return (
-        <View style={{width: '90%', borderRadius: 20, overflow: 'hidden'}}>
-            {translacoes.map(t => {
+        <View style={{width: '90%', borderRadius: 20, overflow: 'hidden', gap: 2}}>
+            {translacoesPorIntervalo.map(t => {
                 const categoria = categories.find(c => c.id === t.categoryID)
                 const tipo = categoria?.tipos.find(ct => ct.id === t.tipoID)
                 const [ano, mes, dia] = t.date.split('-').map(Number)

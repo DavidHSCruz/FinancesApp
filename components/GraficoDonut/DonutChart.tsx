@@ -105,20 +105,21 @@ function DonutChart({
       <View style={{ alignItems: 'center', marginTop: -20 }}>
         {data.map((item, index) => {
           const cor = () => {
+            if (item.value === 0) return theme.placeholder
             if (item.name === 'Renda') return theme.renda
             if (item.name === 'Despesas') return theme.despesa
             if (item.name === 'Investimentos') return theme.investimento
-            return theme.textPrimary
+            return theme.placeholder
           }
-          
+
           return (
             <View key={index} style={ styles.container }>
-              <View style={{ width: 12, height: 12, position: 'absolute', backgroundColor: item.color, marginRight: 8 }} />
+              <View style={{ width: 12, height: 12, position: 'absolute', backgroundColor: cor(), marginRight: 8 }} />
               <View  style={{ ...styles.containerLegenda, borderBottomColor: cor() }}>
                 <Text style={{ color: theme.textPrimary, width: '50%', paddingLeft: 16}}>{item.name}</Text>
                 <Text style={{ color: cor(), fontSize: 12, width: '50%', textAlign: 'right'}}>{item.valueReais}</Text>
               </View>
-              <Barra data={data} color={cor()} name={item.name}/>
+              <Barra data={data} color={cor()} name={item.name} />
             </View>
           )
         })}
@@ -133,11 +134,13 @@ function Barra({data, color, name}: { data: Data[], color: string, name: string}
     values = values.sort((a, b) => Number(a[1]) - Number(b[1]))
     const valorMax = 60
     const position = values.findIndex(item => item[0] === name)
-    if (position === 2) return valorMax
+
+    if (position === 2) return Number(values[2][1]) * valorMax / Number(values[2][1])
     if (position === 1) return Number(values[1][1]) * valorMax / Number(values[2][1])
     if (position === 0) return Number(values[0][1]) * valorMax / Number(values[2][1])
     return 0
   }, [data, name])
+
 
   return (
     <View style={{flexDirection: 'row', width: '100%', height: '70%',position: 'absolute'}}>

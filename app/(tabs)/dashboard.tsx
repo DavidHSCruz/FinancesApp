@@ -9,6 +9,7 @@ import DonutChart from "@/components/GraficoDonut/DonutChart"
 import { IntervalSelector } from "@/components/IntervalSelector/IntervalSelector"
 import { TranslacoesResume } from "@/components/TranslacoesResume/TranslacoesResume"
 import { useDadosValue } from "@/context/dadosContext"
+import { IIntervalo } from "@/types/intervalos"
 import { carregarDadosStorage } from "@/utils/carregaDados"
 
 export default function Home() {
@@ -94,7 +95,7 @@ export default function Home() {
   // }, [])
 
   const ano = new Date().getFullYear()
-  const [intervalo, setIntervalo] = useState({
+  const [intervalo, setIntervalo] = useState<IIntervalo>({
     nome: "Ano",
     dataInicial: `01-01-${ano}`,
     dataFinal: `31-12-${ano}`
@@ -120,40 +121,60 @@ export default function Home() {
   }, [setDados])
 
   const totais = useMemo(() => {
+    function acumulador(intervalo?: IIntervalo, isSaldo = false) {
+      let totalRenda = 0
+      let totalDespesa = 0
+      let totalInvestimento = 0
+
+      dados.items.forEach(item => {
+        if (item.tipoID && item.categoryID) {
+          let categoria = dados.categories.find(c => c.id === item.categoryID)
+          if (!categoria) return
+          
+          const valor = Number(item.value) || 0
+          if (!isSaldo && intervalo) {
+            const [ano, mes, dia] = item.date.split('-').map(Number)
+            const [diaI, mesI, anoI] = intervalo.dataInicial.split('-').map(Number)
+            const [diaF, mesF, anoF] = intervalo.dataFinal.split('-').map(Number)
+            const dateTime = new Date(ano, mes, dia).getTime()
+            const dateTimeI = new Date(anoI, mesI, diaI).getTime()
+            const dateTimeF = new Date(anoF, mesF, diaF).getTime()
+
+            if (dateTimeI <= dateTime && dateTimeF >= dateTime) {
+              if (categoria.nome === "renda") totalRenda += valor
+              if (categoria.nome === "despesa") totalDespesa += valor
+              if (categoria.nome === "investimento") totalInvestimento += valor
+
+            }
+          }else {
+            if (categoria.nome === "renda") totalRenda += valor
+            if (categoria.nome === "despesa") totalDespesa += valor
+            if (categoria.nome === "investimento") totalInvestimento += valor
+
+          }
+      }})
+      
+      return { totalRenda, totalDespesa, totalInvestimento }
+    }
+  
     if (!dados.items || !dados.categories) return
-
-    let totalRenda = 0
-    let totalDespesa = 0
-    let totalInvestimento = 0
-    let totalSaldo = 0
-
-    dados.items.forEach(item => {
-      if (item.tipoID && item.categoryID) {
-        const categoria = dados.categories.find(c => c.id === item.categoryID)
-        if (!categoria) return
-
-        const valor = Number(item.value) || 0
-
-        if (categoria.nome === "renda") totalRenda += valor
-        if (categoria.nome === "despesa") totalDespesa += valor
-        if (categoria.nome === "investimento") totalInvestimento += valor
-      }
-    })
-    totalSaldo = totalRenda - (totalDespesa + totalInvestimento)
+    const valores = acumulador(intervalo)
+    const saldo = () => {
+      const totais = acumulador(intervalo, true)
+      return totais.totalRenda - (totais.totalDespesa + totais.totalInvestimento)
+    }
     
-    return { totalRenda, totalDespesa, totalInvestimento, totalSaldo }
-
-  }, [dados])
+    return { valores, saldo }
+  }, [dados, intervalo])
 
   const dadosGrafico = useMemo(() => {
     if (!dados.items || !dados.categories) return
-
-    const { totalRenda = 0, totalDespesa = 0, totalInvestimento = 0 } = totais || {}
+    const valores = totais?.valores
 
     return [
-      { name: "Renda", value: totalRenda, valueReais: valorFormatadoBR(totalRenda), color: theme.renda },
-      { name: "Despesas", value: totalDespesa, valueReais: valorFormatadoBR(totalDespesa), color: theme.despesa },
-      { name: "Investimentos", value: totalInvestimento, valueReais: valorFormatadoBR(totalInvestimento), color: theme.investimento }
+      { name: "Renda", value: valores?.totalRenda || 0, valueReais: valorFormatadoBR(valores?.totalRenda || 0), color: theme.renda },
+      { name: "Despesas", value: valores?.totalDespesa || 0, valueReais: valorFormatadoBR(valores?.totalDespesa || 0), color: theme.despesa },
+      { name: "Investimentos", value: valores?.totalInvestimento || 0, valueReais: valorFormatadoBR(valores?.totalInvestimento || 0), color: theme.investimento }
     ]
   }, [dados, theme, totais])
 
@@ -166,14 +187,16 @@ export default function Home() {
   
 
   return (
+    <>
+      <View style={{ ...styles.bgSaldo, backgroundColor: theme.action}} />
+      <View style={{ ...styles.containerSaldo, backgroundColor: theme.action}}>
+        <Text style={{ ...styles.saldo, color: theme.background }}>
+          {`Saldo = ${valorFormatadoBR(totais?.saldo() || 0)}`}
+        </Text>
+      </View>
       <ScrollView contentContainerStyle={{ paddingBottom: 150 }}>
-        <View style={{ ...styles.containerSaldo, backgroundColor: theme.action }}>
-          <Text style={{ ...styles.saldo, color: theme.background }}>
-            {`Saldo = ${valorFormatadoBR(totais?.totalSaldo || 0)}`}
-          </Text>
-        </View>
 
-        <View style={{ marginTop: -40, alignItems: "center", gap: 20 }}>
+        <View style={{ marginTop: 70, alignItems: "center", gap: 20 }}>
           <View style={{ ...styles.containerSurface, backgroundColor: theme.surface }}>
 
             <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
@@ -181,12 +204,13 @@ export default function Home() {
             </View>
             <IntervalSelector intervalo={intervalo} setIntervalo={setIntervalo} />
             <DonutChart data={dadosGrafico || []}>
-              {valorFormatadoBR(totais?.totalSaldo || 0)}
+              {valorFormatadoBR(totais?.saldo() || 0)}
             </DonutChart>
 
           </View>
-          <TranslacoesResume translacoes={translacoes} categories={dados.categories} />
+          <TranslacoesResume translacoes={translacoes} categories={dados.categories} intervalo={intervalo} />
         </View>
       </ScrollView>
+    </>
   )
 }

@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors"
+import { useThemeColors } from "@/hooks/useThemeColors"
 import { IIntervalo, IntervaloSelector } from "@/types/intervalos"
 import { formatarData } from "@/utils/formataData"
 import { dataValidation } from "@/utils/validacoes"
@@ -32,6 +32,7 @@ function formataPeriodoTexto(di: string, df: string) {
 
 const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
     const [intervaloInput, setIntervaloInput] = useState<IIntervalo>({} as IIntervalo)
+    const theme = useThemeColors()
 
     function handleData(e: string) {
         let numeros = e.replace(/\D/g, '')
@@ -70,20 +71,20 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
             <Text></Text>
             <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                 <TextInput
-                    style={styles.text}
+                    style={{color: theme.textPrimary}}
                     onChange={e => handleChange(e.nativeEvent.text, true)}
                     onBlur={e => intervaloInput.dataInicial !== '' && inputBlur(true)}
                     placeholder="DD/MM/AAAA"
-                    placeholderTextColor={colors.placeholder}
+                    placeholderTextColor={theme.placeholder}
                     value={intervaloInput.dataInicial}
                 />
-                <Text style={styles.text}>-</Text>
+                <Text style={{color: theme.textPrimary}}>-</Text>
                 <TextInput
-                    style={styles.text}
+                    style={{color: theme.textPrimary}}
                     onChange={e => handleChange(e.nativeEvent.text, false)}
                     onBlur={e => intervaloInput.dataFinal !== '' && inputBlur(false)}
                     placeholder="DD/MM/AAAA"
-                    placeholderTextColor={colors.placeholder}
+                    placeholderTextColor={theme.placeholder}
                     value={intervaloInput.dataFinal}
                 />
             </View>
@@ -94,6 +95,7 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
 
 const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => {
     const { nome: tipo } = intervalo
+    const theme = useThemeColors()
 
     function adicionar(i: string, dataFinal = false) {
         const [ dia, mes, ano ] = i.split('-').map(Number)
@@ -187,12 +189,14 @@ const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => 
     return (
         <Pressable 
             onPress={ e => mudarData() }
-        ><Text style={[styles.text, {paddingVertical: 5, paddingHorizontal: 10}]}>{direcao}</Text>
+        ><Text style={{paddingVertical: 5, paddingHorizontal: 10, color: theme.textSecondary}}>{direcao}</Text>
         </Pressable>
     )
 }
 
 const Filtro = ({intervalo, setIntervalo, podeAvancar, setPodeAvancar} : FiltroProps) => {
+    const theme = useThemeColors()
+
     return (
         <>
             <Seta
@@ -201,7 +205,7 @@ const Filtro = ({intervalo, setIntervalo, podeAvancar, setPodeAvancar} : FiltroP
                 direcao='<'
                 setPodeAvancar={setPodeAvancar}
             />
-            <Text style={styles.text}>{formataPeriodoTexto(intervalo.dataInicial, intervalo.dataFinal)}</Text>
+            <Text style={{paddingVertical: 10, color: theme.textSecondary}}>{formataPeriodoTexto(intervalo.dataInicial, intervalo.dataFinal)}</Text>
             {podeAvancar ?
                 <Seta
                     intervalo={intervalo}

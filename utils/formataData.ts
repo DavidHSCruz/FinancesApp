@@ -13,3 +13,8 @@ export function formatarDataBR(data: Date) {
 
     return `${d}/${m}/${ano}`
 }
+
+export function getDiaMesAno(data: string) {
+    const [ dia, mes, ano ] = data.split('-').map(Number)
+    return { dia, mes, ano }
+}

@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors"
+import { useThemeColors } from "@/hooks/useThemeColors"
 import { IntervaloSelector } from "@/types/intervalos"
 import { formatarData } from "@/utils/formataData"
 import { Pressable, Text, View } from "react-native"
@@ -10,6 +10,7 @@ export const IntervalSelector = ({intervalo, setIntervalo}: IntervaloSelector) =
     const hojeStr = hoje.toISOString().split('T')[0]
     const [ ano, mes, dia ] = hojeStr.split('-').map(Number)
     const diaDaSemana = new Date(hoje).getDay()
+    const theme = useThemeColors()
 
     const intervalosDeDatas = {
         Dia: {
@@ -43,7 +44,7 @@ export const IntervalSelector = ({intervalo, setIntervalo}: IntervaloSelector) =
                     return(
                         <Pressable 
                             key={index} 
-                            style={[styles.filtro, intervalo.nome === i && styles.filtroSelected]}
+                            style={[styles.filtro, intervalo.nome === i && styles.filtroSelected, {borderColor: theme.textPrimary}]}
                             onPress={() => {
 
                                 setIntervalo({
@@ -54,7 +55,7 @@ export const IntervalSelector = ({intervalo, setIntervalo}: IntervaloSelector) =
 
                             }}
                         >
-                            <Text style={{color: colors.text}}>{i}</Text>
+                            <Text style={intervalo.nome === i ? {color: theme.textPrimary} : {color: theme.textSecondary}}>{i}</Text>
                         </Pressable>
                     )
                 })}
