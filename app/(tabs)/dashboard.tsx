@@ -178,7 +178,7 @@ export default function Home() {
     ]
   }, [dados, theme, totais])
 
-  const translacoes = useMemo(() => {
+  const transacoes = useMemo(() => {
     if (!dados.items || !dados.categories) return []
     const catRendaId = dados.categories.find(categoria => categoria.nome === "renda")?.id
 
@@ -200,7 +200,7 @@ export default function Home() {
           <View style={{ ...styles.containerSurface, backgroundColor: theme.surface }}>
 
             <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
-              <Text style={{ ...styles.titulo, color: theme.textPrimary }}>Resumo</Text>
+              <Text style={{ ...styles.titulo, color: theme.textSecondary }}>Resumo</Text>
             </View>
             <IntervalSelector intervalo={intervalo} setIntervalo={setIntervalo} />
             <DonutChart data={dadosGrafico || []}>
@@ -208,7 +208,7 @@ export default function Home() {
             </DonutChart>
 
           </View>
-          <TranslacoesResume translacoes={translacoes} categories={dados.categories} intervalo={intervalo} />
+          <TranslacoesResume transacoes={transacoes} categories={dados.categories} intervalo={intervalo} />
         </View>
       </ScrollView>
     </>

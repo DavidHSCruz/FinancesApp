@@ -17,7 +17,12 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
   },
-  text: {
-    
-}
+  titulo: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  titulosContainer: {
+    borderBottomWidth: .5,
+  }
 })
