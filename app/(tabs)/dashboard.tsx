@@ -7,12 +7,13 @@ import { ScrollView, Text, View } from "react-native"
 
 import DonutChart from "@/components/GraficoDonut/DonutChart"
 import { IntervalSelector } from "@/components/IntervalSelector/IntervalSelector"
+import SurfaceContainer from "@/components/SurfaceContainer/SurfaceContainer"
 import { TranslacoesResume } from "@/components/TranslacoesResume/TranslacoesResume"
 import { useDadosValue } from "@/context/dadosContext"
 import { IIntervalo } from "@/types/intervalos"
 import { carregarDadosStorage } from "@/utils/carregaDados"
 
-export default function Home() {
+export default function Dashboard() {
   const theme = useThemeColors()
   const { dados, setDados } = useDadosValue()
 
@@ -194,22 +195,20 @@ export default function Home() {
           {`Saldo = ${valorFormatadoBR(totais?.saldo() || 0)}`}
         </Text>
       </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 150 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 200, marginTop: 70 }}>
 
-        <View style={{ marginTop: 70, alignItems: "center", gap: 20 }}>
-          <View style={{ ...styles.containerSurface, backgroundColor: theme.surface }}>
+        <View style={{ marginHorizontal: 'auto', gap: 20, width: '90%' }}>
 
-            <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
-              <Text style={{ ...styles.titulo, color: theme.textSecondary }}>Resumo</Text>
-            </View>
+          <SurfaceContainer titulo="Resumo">
             <IntervalSelector intervalo={intervalo} setIntervalo={setIntervalo} />
             <DonutChart data={dadosGrafico || []}>
               {valorFormatadoBR(totais?.saldo() || 0)}
             </DonutChart>
-
-          </View>
+          </SurfaceContainer>
           <TranslacoesResume transacoes={transacoes} categories={dados.categories} intervalo={intervalo} />
+
         </View>
+
       </ScrollView>
     </>
   )

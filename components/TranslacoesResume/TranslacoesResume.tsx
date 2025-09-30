@@ -43,8 +43,8 @@ export const TranslacoesResume = ({transacoes, categories, intervalo}: Translaco
 
         const dateA = new Date(anoA, mesA, diaA).getTime()
         const dateB = new Date(anoB, mesB, diaB).getTime()
-        console.log(a,b)
-        return dateA - dateB
+        
+        return dateB - dateA
     }).map(([date, transacoes]) => {
         return {
             date,
@@ -53,7 +53,7 @@ export const TranslacoesResume = ({transacoes, categories, intervalo}: Translaco
     })
 
     return (
-        <View style={{width: '90%'}}>
+        <View style={{width: '100%'}}>
             <View style={{paddingHorizontal: 20}}>
                 <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
                     <Text style={{ ...styles.titulo, color: theme.textSecondary }}>Translações</Text>
