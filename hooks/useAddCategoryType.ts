@@ -1,26 +1,30 @@
+import { IFinanceCategoryType } from "@/types/category"
 import { IDados } from "@/types/dados"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function addCategoryType(
   dados: IDados, 
   setDados: React.Dispatch<React.SetStateAction<IDados>>, 
-  categoryID: number
+  categoryID: number,
+  novoTipo: IFinanceCategoryType
 ){
 
   function adicionaTipo() {
       const tipos = dados.categories.filter(cat => cat.id === categoryID)[0].tipos
-      const ultimoID = tipos.at(-1)?.id
+      const ultimoID = tipos.at(-1)?.id || 0
 
-      return [
-          ...tipos,
-          {
-            id: ultimoID !== undefined ? ultimoID + 1 : 0,
-            nome: "Nome",
-            planejadoValue: "R$ 0,00"
-          }
+      return [ 
+        ...tipos, 
+        {
+          id: ultimoID !== undefined ? ultimoID + 1 : 1,
+          nome: novoTipo.nome,
+          planejadoValue: novoTipo.planejadoValue
+        }
       ]
-  }
+    }
 
+  if (novoTipo.nome === '' || novoTipo.planejadoValue === '') return
+    
   const categoriasAtualizadas = dados.categories.map(category =>
     category.id === categoryID ?
       { 

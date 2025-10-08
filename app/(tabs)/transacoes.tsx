@@ -1,124 +1,33 @@
 import { useThemeColors } from "@/hooks/useThemeColors"
 import { styles } from "@/styles/dashboard"
 import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
-import { useEffect, useMemo, useState } from "react"
-import { ScrollView, Text, View } from "react-native"
+import { Fragment, useMemo, useState } from "react"
+import { Pressable, ScrollView, Text, View } from "react-native"
 
 
-import DonutChart from "@/components/GraficoDonut/DonutChart"
-import { IntervalSelector } from "@/components/IntervalSelector/IntervalSelector"
+import Button from "@/components/Button/Button"
+import EditTransacao from "@/components/EditTransacao/EditTransacao"
+import SurfaceContainer from "@/components/SurfaceContainer/SurfaceContainer"
 import { TranslacoesResume } from "@/components/TranslacoesResume/TranslacoesResume"
 import { useDadosValue } from "@/context/dadosContext"
+import { IFinanceCategory } from "@/types/category"
 import { IIntervalo } from "@/types/intervalos"
-import { carregarDadosStorage } from "@/utils/carregaDados"
+import { MaterialCommunityIcons } from "@expo/vector-icons"
 
-export default function Home() {
+export default function Transacoes() {
   const theme = useThemeColors()
-  const { dados, setDados } = useDadosValue()
-
-  // ESSE USE EFFECT É PARA CARREGAR OS DADOS INICIAIS SE CASO PERDIDOS
-  // useEffect(() => {
-  //   AsyncStorage.setItem('@finance:items', JSON.stringify([
-  //     {
-  //       id: 1,
-  //       date: "2025-07-24",
-  //       nome: "Salário",
-  //       value: 3500,
-  //       categoryID: 1,
-  //       tipoID: 1
-  //     },
-  //     {
-  //       id: 2,
-  //       date: "2025-07-24",
-  //       nome: "Aluguel",
-  //       value: 1200,
-  //       categoryID: 2,
-  //       tipoID: 1
-  //     },
-  //     {
-  //       id: 3,
-  //       date: "2025-07-24",
-  //       nome: "Compra de ações",
-  //       value: 500,
-  //       categoryID: 3,
-  //       tipoID: 1
-  //     }
-  //   ]))
-  //   AsyncStorage.setItem('@finance:categories', JSON.stringify([
-  //     {
-  //       id: 1,
-  //       nome: "renda",
-  //       tipos: [
-  //         {
-  //           id: 1,
-  //           nome: "Salário"
-  //         },
-  //         {
-  //           id: 2,
-  //           nome: "Freelance"
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       id: 2,
-  //       nome: "despesa",
-  //       tipos: [
-  //         {
-  //           id: 1,
-  //           nome: "Aluguel",
-  //           planejadoValue: "R$ 1.389,55"
-  //         },
-  //         {
-  //           id: 2,
-  //           nome: "Supermercado",
-  //           planejadoValue: "R$ 905,00"
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       id: 3,
-  //       nome: "investimento",
-  //       tipos: [
-  //         {
-  //           id: 1,
-  //           nome: "Ações",
-  //           planejadoValue: ""
-  //         },
-  //         {
-  //           id: 2,
-  //           nome: "Fundos Imobiliários",
-  //           planejadoValue: "0,00"
-  //         }
-  //       ]
-  //     }
-  //   ]))
-  // }, [])
+  const { dados } = useDadosValue()
 
   const ano = new Date().getFullYear()
+  const [isAddTransacao, setIsAddTransacao] = useState(false)
+  const [menuOpened, setMenuOpened] = useState(false)
+  const [selectedCategoryID, setSelectedCategoryID] = useState(-1)
+  const [selectedTipoID, setSelectedTipoID] = useState(-1)
   const [intervalo, setIntervalo] = useState<IIntervalo>({
-    nome: "Ano",
+    nome: "Mês",
     dataInicial: `01-01-${ano}`,
     dataFinal: `31-12-${ano}`
   })
-
-  
-  useEffect(() => {
-    const CHAVES_STORAGE = {
-      ITEMS: '@finance:items',
-      CATEGORIES: '@finance:categories',
-    } as const
-
-    async function carregarDados() {
-        const valoresStorage = Object.values(CHAVES_STORAGE)
-        const itensCarregados = await carregarDadosStorage(valoresStorage)
-        const [ items, categories ] = itensCarregados
-        setDados({
-            items: items || [],
-            categories: categories || []
-        })
-    }
-    carregarDados()
-  }, [setDados])
 
   const totais = useMemo(() => {
     function acumulador(intervalo?: IIntervalo, isSaldo = false) {
@@ -167,50 +76,119 @@ export default function Home() {
     return { valores, saldo }
   }, [dados, intervalo])
 
-  const dadosGrafico = useMemo(() => {
-    if (!dados.items || !dados.categories) return
-    const valores = totais?.valores
-
-    return [
-      { name: "Renda", value: valores?.totalRenda || 0, valueReais: valorFormatadoBR(valores?.totalRenda || 0), color: theme.renda },
-      { name: "Despesas", value: valores?.totalDespesa || 0, valueReais: valorFormatadoBR(valores?.totalDespesa || 0), color: theme.despesa },
-      { name: "Investimentos", value: valores?.totalInvestimento || 0, valueReais: valorFormatadoBR(valores?.totalInvestimento || 0), color: theme.investimento }
-    ]
-  }, [dados, theme, totais])
-
   const transacoes = useMemo(() => {
     if (!dados.items || !dados.categories) return []
-    const catRendaId = dados.categories.find(categoria => categoria.nome === "renda")?.id
 
-    return dados.items.filter(translacao => translacao.categoryID !== catRendaId)
+    return dados.items
   }, [dados])
   
 
   return (
     <>
-      <View style={{ ...styles.bgSaldo, backgroundColor: theme.action}} />
-      <View style={{ ...styles.containerSaldo, backgroundColor: theme.action}}>
+      <View style={{ ...styles.bgSaldo, backgroundColor: theme.action, zIndex: 0 }} />
+      <View style={{ ...styles.containerSaldo, backgroundColor: theme.action, zIndex: 2 }}>
         <Text style={{ ...styles.saldo, color: theme.background }}>
           {`Saldo = ${valorFormatadoBR(totais?.saldo() || 0)}`}
         </Text>
       </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 150 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 200, marginTop: 70, zIndex: 1 }}>
+        <View style={{ marginHorizontal: 'auto', gap: 20, width: '90%' }}>
 
-        <View style={{ marginTop: 70, alignItems: "center", gap: 20 }}>
-          <View style={{ ...styles.containerSurface, backgroundColor: theme.surface }}>
+          <SurfaceContainer titulo="Transações" intervalo={{intervalo, setIntervalo}}>
+            <TranslacoesResume transacoes={transacoes} categories={dados.categories} intervalo={intervalo} edit />
+            <Button action={() => setMenuOpened(true)} style={{width: 200, borderRadius: 10}}>{isAddTransacao ? 'mudar categoria' : '+ add transação'}</Button>
+            {menuOpened &&
+              <Menu 
+                setMenuOpened={setMenuOpened}
+                categories={dados.categories}
+                selectedCategoryID={selectedCategoryID}
+                setSelectedCategoryID={setSelectedCategoryID}
+                isAddTransacao={isAddTransacao}
+                setIsAddTransacao={setIsAddTransacao}
+                setSelectedTipoID={setSelectedTipoID}
+              />
+            }
+            {isAddTransacao &&
+              <EditTransacao
+                transacao={{ id: 0, nome: '', value: '', date: new Date().getDate().toString(), categoryID: selectedCategoryID, tipoID: selectedTipoID }}
+                setIsEditable={setIsAddTransacao}
+                add
+              />
+            }
+          </SurfaceContainer>
 
-            <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
-              <Text style={{ ...styles.titulo, color: theme.textSecondary }}>Resumo</Text>
-            </View>
-            <IntervalSelector intervalo={intervalo} setIntervalo={setIntervalo} />
-            <DonutChart data={dadosGrafico || []}>
-              {valorFormatadoBR(totais?.saldo() || 0)}
-            </DonutChart>
-
-          </View>
-          <TranslacoesResume transacoes={transacoes} categories={dados.categories} intervalo={intervalo} />
         </View>
       </ScrollView>
     </>
   )
+}
+
+interface MenuProps {
+  setMenuOpened: React.Dispatch<React.SetStateAction<boolean>>
+  categories: IFinanceCategory[]
+  selectedCategoryID: number
+  setSelectedCategoryID: React.Dispatch<React.SetStateAction<number>>
+  isAddTransacao: boolean
+  setIsAddTransacao: React.Dispatch<React.SetStateAction<boolean>>
+  setSelectedTipoID: React.Dispatch<React.SetStateAction<number>>
+}
+
+const Menu = ({setMenuOpened, categories, selectedCategoryID, setSelectedCategoryID,isAddTransacao, setIsAddTransacao, setSelectedTipoID}: MenuProps) => {
+    const theme = useThemeColors()
+
+    return (
+        <View style={{
+          padding: 10,
+          width: 200,
+          top: -30,
+          gap: 10,
+          borderRadius: 5,
+          zIndex: 1, backgroundColor: theme.background
+        }}>
+            <Pressable style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}} onPress={e => setMenuOpened(false)}>
+                <Text style={{color:theme.textSecondary}}>{isAddTransacao ? 'mudar categoria' : '+ add transação'}</Text>
+                <MaterialCommunityIcons name="close" size={20} color={theme.placeholder} />
+            </Pressable>
+
+            {categories.map(cat => {
+              const cor = () => {
+                if (cat.nome === 'renda') return theme.renda
+                if (cat.nome === 'despesa') return theme.despesa
+                if (cat.nome === 'investimento') return theme.investimento
+                return theme.placeholder
+              }
+
+              return(
+                <Fragment key={cat.id}>
+                  <View style={{backgroundColor: `${cor()}30`, borderRadius: 5, paddingHorizontal: 10}}>
+                  <Pressable
+                    style={{paddingVertical: 10}}
+                    onPress={e => {
+                        if (selectedCategoryID !== cat.id) setSelectedCategoryID(cat.id)
+                        else setSelectedCategoryID(-1)
+                      }
+                  }>
+                      <Text style={{color: cor()}}>{cat.nome}</Text>
+                  </Pressable>
+                    {selectedCategoryID === cat.id &&
+                      cat.tipos.map(tipo => (
+                        <Pressable 
+                          key={tipo.id}
+                          style={{paddingVertical: 10, backgroundColor: theme.background, borderRadius: 5, paddingHorizontal: 10, marginBottom: 10}}
+                          onPress={e => {
+                              setSelectedTipoID(tipo.id)
+                              setIsAddTransacao(true)
+                              setMenuOpened(false)
+                            }
+                          }>
+                            <Text style={{color: cor()}}>{tipo.nome}</Text>
+                        </Pressable>
+                      ))
+                    }
+                  </View>
+                </Fragment>
+            )}
+            )}
+        </View>
+    )
 }

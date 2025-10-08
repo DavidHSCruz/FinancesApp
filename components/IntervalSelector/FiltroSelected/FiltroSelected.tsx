@@ -1,9 +1,9 @@
 import { useThemeColors } from "@/hooks/useThemeColors"
 import { IIntervalo, IntervaloSelector } from "@/types/intervalos"
-import { formatarData } from "@/utils/formataData"
+import { formatarData, formatInputDataMesAno } from "@/utils/formataData"
 import { dataValidation } from "@/utils/validacoes"
 import { useEffect, useState } from "react"
-import { Pressable, Text, TextInput, View } from "react-native"
+import { Pressable, StyleProp, Text, TextInput, TextStyle, View } from "react-native"
 import { styles } from "./styles"
 
 interface FiltroProps {
@@ -13,19 +13,28 @@ interface FiltroProps {
     setPodeAvancar: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-interface SetaProps {
+interface ChangeProps {
     intervalo: IIntervalo
     setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>
-    direcao: '<' | '>'
+    tipo?: '<' | '>' | 'input'
+    dataMes?: string
+    setMes?: React.Dispatch<React.SetStateAction<string>>
     setPodeAvancar: React.Dispatch<React.SetStateAction<boolean>>
+    style?: StyleProp<TextStyle>
 }
 
 function formataDataBR(data: string) {
     return data.replace(/-/g, '/')
 }
 
-function formataPeriodoTexto(di: string, df: string) {
+function formataPeriodoTexto(intervalo: IIntervalo) {
+    console.log(intervalo)
+    const { dataInicial: di, dataFinal: df } = intervalo
     if (di === df) return formataDataBR(di)
+    if (intervalo.nome === 'Mês') {
+        const [ , mes, ano ] = di.split('-')
+        return `${mes}/${ano}`
+    }
 
     return `${formataDataBR(di)} - ${formataDataBR(df)}`
 }
@@ -93,8 +102,46 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
     )
 }
 
-const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => {
-    const { nome: tipo } = intervalo
+const FiltroMes = ({intervalo, setIntervalo, podeAvancar, setPodeAvancar} : FiltroProps) => {
+    const [intervaloInput, setIntervaloInput] = useState(formataPeriodoTexto(intervalo))
+    useEffect(() => setIntervaloInput(formataPeriodoTexto(intervalo)),[intervalo])
+    const theme = useThemeColors()
+    
+    return (
+        <>
+            <Change
+                intervalo={intervalo}
+                setIntervalo={setIntervalo}
+                tipo='<'
+                setPodeAvancar={setPodeAvancar}
+            />
+            <TextInput 
+                style={{paddingVertical: 10, color: theme.textSecondary}}
+                value={intervaloInput}
+                placeholder="MM/AAAA"
+                onChange={e => {
+                    setIntervaloInput(formatInputDataMesAno(e.nativeEvent.text))
+                }}
+                onBlur={e => {
+                    const [ mes, ano ] = intervaloInput.split('/')
+                    setIntervalo({...intervalo, dataInicial: `01-${mes}-${ano}`, dataFinal: `30-${mes}-${ano}`})
+                }}
+            />
+            {podeAvancar ?
+                <Change
+                    intervalo={intervalo}
+                    setIntervalo={setIntervalo}
+                    tipo='>'
+                    setPodeAvancar={setPodeAvancar}
+                />
+            :   <Text style={{paddingHorizontal: 12}}></Text>
+            }
+        </>
+    )
+}
+
+const Change = ({intervalo, setIntervalo, tipo, setPodeAvancar, dataMes, setMes, style}: ChangeProps) => {
+    const { nome: t } = intervalo
     const theme = useThemeColors()
 
     function adicionar(i: string, dataFinal = false) {
@@ -102,7 +149,7 @@ const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => 
         let novaData
 
         if (!dataFinal) {
-            switch (tipo) {
+            switch (t) {
                 case 'Semana':
                     novaData = new Date(ano, mes - 1, dia + 7)
                     return formatarData(novaData)
@@ -117,7 +164,7 @@ const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => 
                     return formatarData(novaData)
         }}else {
             const [ diaI, mesI, anoI ] = intervalo.dataInicial.split('-').map(Number)
-            switch (tipo) {
+            switch (t) {
                 case 'Semana':
                     novaData = new Date(anoI, mesI - 1, diaI + 13)
                     return formatarData(novaData)
@@ -138,7 +185,7 @@ const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => 
         let novaData
 
         if (!dataFinal) {
-            switch (tipo) {
+            switch (t) {
                 case 'Semana':
                     novaData = new Date(ano, mes - 1, dia - 7)
                     return formatarData(novaData)
@@ -153,7 +200,7 @@ const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => 
                     return formatarData(novaData)
         }}else {
             const [ diaI, mesI, anoI ] = intervalo.dataInicial.split('-').map(Number)
-            switch (tipo) {
+            switch (t) {
                 case 'Semana':
                     novaData = new Date(anoI, mesI - 1, diaI - 1)
                     return formatarData(novaData)
@@ -168,15 +215,16 @@ const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => 
                     return formatarData(novaData)
         }}
     }
+
     
     function mudarData() {
-        if (direcao === '>') {
+        if (tipo === '>') {
             setIntervalo({
                 ...intervalo, 
                 dataInicial: adicionar(intervalo.dataInicial),
                 dataFinal: adicionar(intervalo.dataFinal, true)
             })
-        }else {
+        }else if (tipo === '<') {
             setIntervalo({
                 ...intervalo, 
                 dataInicial: subtrair(intervalo.dataInicial),
@@ -189,7 +237,7 @@ const Seta = ({intervalo, setIntervalo, direcao, setPodeAvancar}: SetaProps) => 
     return (
         <Pressable 
             onPress={ e => mudarData() }
-        ><Text style={{paddingVertical: 5, paddingHorizontal: 10, color: theme.textSecondary}}>{direcao}</Text>
+        ><Text style={{paddingVertical: 5, paddingHorizontal: 10, color: theme.textSecondary}}>{tipo}</Text>
         </Pressable>
     )
 }
@@ -199,18 +247,18 @@ const Filtro = ({intervalo, setIntervalo, podeAvancar, setPodeAvancar} : FiltroP
 
     return (
         <>
-            <Seta
+            <Change
                 intervalo={intervalo}
                 setIntervalo={setIntervalo}
-                direcao='<'
+                tipo='<'
                 setPodeAvancar={setPodeAvancar}
             />
-            <Text style={{paddingVertical: 10, color: theme.textSecondary}}>{formataPeriodoTexto(intervalo.dataInicial, intervalo.dataFinal)}</Text>
+            <Text style={{paddingVertical: 10, color: theme.textSecondary}}>{formataPeriodoTexto(intervalo)}</Text>
             {podeAvancar ?
-                <Seta
+                <Change
                     intervalo={intervalo}
                     setIntervalo={setIntervalo}
-                    direcao='>'
+                    tipo='>'
                     setPodeAvancar={setPodeAvancar}
                 />
             :   <Text style={{paddingHorizontal: 12}}></Text>
@@ -224,8 +272,8 @@ export const FiltroSelected = ({intervalo, setIntervalo} : IntervaloSelector) =>
     
     useEffect(() => {
         if (intervalo.dataInicial === intervalo.dataFinal) setPodeAvancar(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        else setPodeAvancar(true)
+    }, [intervalo])
 
     useEffect(() => {
         const [ diaF, mesF, anoF ] = intervalo.dataFinal.split('-').map(Number)
@@ -239,21 +287,37 @@ export const FiltroSelected = ({intervalo, setIntervalo} : IntervaloSelector) =>
             setPodeAvancar(false)
         }
     }, [intervalo])
-    
-    return (
-        <View style={styles.container}>
-            {intervalo.nome === 'Período' ?
+
+    if (intervalo.nome === 'Período') {
+        return (
+            <View style={styles.container}>
                 <FiltroPeriodo
                     intervalo={intervalo}
                     setIntervalo={setIntervalo}
                 />
-            :   <Filtro
+            </View>
+    )}
+
+    if (intervalo.nome === 'Mês') {
+        return (
+            <View style={styles.container}>
+                <FiltroMes
                     intervalo={intervalo}
                     setIntervalo={setIntervalo}
                     podeAvancar={podeAvancar}
                     setPodeAvancar={setPodeAvancar}
                 />
-            }
+            </View>
+    )}
+    
+    return (
+        <View style={styles.container}>
+            <Filtro
+                intervalo={intervalo}
+                setIntervalo={setIntervalo}
+                podeAvancar={podeAvancar}
+                setPodeAvancar={setPodeAvancar}
+            />
         </View>
     )
     

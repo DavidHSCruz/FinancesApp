@@ -1,24 +1,28 @@
 import { useThemeColors } from '@/hooks/useThemeColors'
-import { Text, View } from 'react-native'
+import { IIntervalo } from '@/types/intervalos'
+import { StyleProp, Text, View, ViewStyle } from 'react-native'
 import Svg, { Circle } from 'react-native-svg'
+import { FiltroSelected } from '../IntervalSelector/FiltroSelected/FiltroSelected'
 import { styles } from './styles'
 
 interface SurfaceContainerProps {
     children: React.ReactNode
     titulo?: string
     cor?: string
+    style?: StyleProp<ViewStyle>
+    intervalo?: {intervalo: IIntervalo, setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>}
 }
 
-const SurfaceContainer = ({children, titulo, cor}: SurfaceContainerProps) => {
+const SurfaceContainer = ({children, titulo, cor, style, intervalo: i}: SurfaceContainerProps) => {
     const theme = useThemeColors()
-
+    
     let tituloFormatted
     if (titulo) {
         tituloFormatted = titulo.charAt(0).toUpperCase() + titulo.slice(1)
     }
 
     return (
-        <View style={{ ...styles.containerSurface, backgroundColor: theme.surface }}>
+        <View style={[{ ...styles.containerSurface, backgroundColor: theme.surface }, style]}>
             {titulo &&
                 <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
                     {cor &&
@@ -27,6 +31,11 @@ const SurfaceContainer = ({children, titulo, cor}: SurfaceContainerProps) => {
                         </Svg>
                     }
                     <Text style={{ ...styles.titulo, color: theme.textSecondary }}>{tituloFormatted}</Text>
+                    {i &&
+                        <View style={{ position: 'absolute', right: 10 }}>
+                            <FiltroSelected intervalo={i.intervalo} setIntervalo={i.setIntervalo} />
+                        </View>
+                    }
                 </View>
             }
             {children}

@@ -5,17 +5,23 @@ import { IFinanceItem } from "@/types/Item"
 import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
 import { formatarDataBR, getDiaMesAno } from "@/utils/formataData"
 import { Fragment } from "react"
-import { Text, View } from "react-native"
+import { Pressable, StyleProp, Text, View, ViewStyle } from "react-native"
 import { styles } from "./styles"
+import deleteItem from "@/hooks/useDeleteItem"
+import { useDadosValue } from "@/context/dadosContext"
 
 interface TranslacoesResumeProps {
     transacoes: IFinanceItem[]
     categories: IFinanceCategory[]
     intervalo: IIntervalo
+    titulo?: string
+    style?: StyleProp<ViewStyle>
+    edit?: boolean
 }
 
-export const TranslacoesResume = ({transacoes, categories, intervalo}: TranslacoesResumeProps) => {
+export const TranslacoesResume = ({transacoes, categories, intervalo, titulo, style, edit}: TranslacoesResumeProps) => {
     const theme = useThemeColors()
+    const {dados, setDados} = useDadosValue()
     const transacoesPorIntervalo = transacoes.filter(t => {
         const [ano, mes, dia] = t.date.split('-')
         const tDate = getDiaMesAno(`${dia}-${mes}-${ano}`)
@@ -53,34 +59,41 @@ export const TranslacoesResume = ({transacoes, categories, intervalo}: Translaco
     })
 
     return (
-        <View style={{width: '100%'}}>
-            <View style={{paddingHorizontal: 20}}>
-                <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
-                    <Text style={{ ...styles.titulo, color: theme.textSecondary }}>Translações</Text>
+        <View style={[{width: '100%'}, style]}>
+            {titulo &&
+                <View style={{paddingHorizontal: 20}}>
+                    <View style={{ ...styles.titulosContainer, borderBottomColor: theme.placeholder }}>
+                        <Text style={{ ...styles.titulo, color: theme.textSecondary }}>{titulo}</Text>
+                    </View>
                 </View>
-            </View>
+            }
             {transacoesOrdenadaPorData.map((date, index) => {
                 const [ano, mes, dia] = date.date.split('-').map(Number)
                 return(
                     <Fragment key={index}>
-                        <Text style={{color: theme.textSecondary, fontSize: 12, textAlign: 'right', padding: 10}}>{formatarDataBR(new Date(ano, mes, dia))}</Text>
+                        <Text style={{color: theme.textSecondary, fontSize: 12, textAlign: 'right', padding: 10}}>{formatarDataBR(new Date(ano, mes - 1, dia))}</Text>
                         <View style={{borderRadius: 20, overflow: 'hidden', gap: 2}}>
                             {date.transacoes.map(t => {
                                 const categoria = categories.find(c => c.id === t.categoryID)
                                 const tipo = categoria?.tipos.find(ct => ct.id === t.tipoID)
                                 
                                 const cor = () => {
+                                    if (categoria?.nome === 'renda') return theme.renda
                                     if (categoria?.nome === 'despesa') return theme.despesa
                                     if (categoria?.nome === 'investimento') return theme.investimento
-                                    return theme.textPrimary
+                                    return theme.placeholder
                                 }
 
                                 return(
-                                    <View key={t.id} style={{ ...styles.container, backgroundColor: `${cor()}30` }}>
+                                    <Pressable 
+                                        key={t.id} 
+                                        style={{ ...styles.container, backgroundColor: `${cor()}30` }}
+                                        onPress={e => { edit && deleteItem(dados, setDados, t) }}
+                                    >
                                         <Text style={{color: cor()}}>{tipo?.nome}</Text>
                                         <Text style={{color: cor()}}>{t.nome}</Text>
                                         <Text style={{color: cor()}}>{valorFormatadoBR(Number(t.value))}</Text>
-                                    </View>
+                                    </Pressable>
                                 )
                             })}
                         </View>

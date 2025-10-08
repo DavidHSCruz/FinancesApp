@@ -133,6 +133,7 @@ export default function Dashboard() {
           if (!categoria) return
           
           const valor = Number(item.value) || 0
+          
           if (!isSaldo && intervalo) {
             const [ano, mes, dia] = item.date.split('-').map(Number)
             const [diaI, mesI, anoI] = intervalo.dataInicial.split('-').map(Number)
@@ -151,10 +152,9 @@ export default function Dashboard() {
             if (categoria.nome === "renda") totalRenda += valor
             if (categoria.nome === "despesa") totalDespesa += valor
             if (categoria.nome === "investimento") totalInvestimento += valor
-
           }
       }})
-      
+
       return { totalRenda, totalDespesa, totalInvestimento }
     }
   
@@ -189,14 +189,13 @@ export default function Dashboard() {
 
   return (
     <>
-      <View style={{ ...styles.bgSaldo, backgroundColor: theme.action}} />
-      <View style={{ ...styles.containerSaldo, backgroundColor: theme.action}}>
+      <View style={{ ...styles.bgSaldo, backgroundColor: theme.action, zIndex: 0}} />
+      <View style={{ ...styles.containerSaldo, backgroundColor: theme.action, zIndex: 2}}>
         <Text style={{ ...styles.saldo, color: theme.background }}>
           {`Saldo = ${valorFormatadoBR(totais?.saldo() || 0)}`}
         </Text>
       </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 200, marginTop: 70 }}>
-
+      <ScrollView contentContainerStyle={{ paddingBottom: 200, marginTop: 70, zIndex: 1 }}>
         <View style={{ marginHorizontal: 'auto', gap: 20, width: '90%' }}>
 
           <SurfaceContainer titulo="Resumo">
@@ -205,10 +204,9 @@ export default function Dashboard() {
               {valorFormatadoBR(totais?.saldo() || 0)}
             </DonutChart>
           </SurfaceContainer>
-          <TranslacoesResume transacoes={transacoes} categories={dados.categories} intervalo={intervalo} />
+          <TranslacoesResume transacoes={transacoes} categories={dados.categories} intervalo={intervalo} titulo="Transações" />
 
         </View>
-
       </ScrollView>
     </>
   )

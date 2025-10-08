@@ -8,12 +8,10 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     position: 'absolute',
     width: '100%',
-    zIndex: -1
   },
   containerSaldo: {
     position: 'absolute',
     width: '100%',
-    zIndex: 1
   },
   saldo: {
     paddingBottom: 10,
