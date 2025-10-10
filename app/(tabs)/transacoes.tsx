@@ -1,7 +1,7 @@
 import { useThemeColors } from "@/hooks/useThemeColors"
 import { styles } from "@/styles/dashboard"
 import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
-import { Fragment, useMemo, useState } from "react"
+import { Fragment, useEffect, useMemo, useState } from "react"
 import { Pressable, ScrollView, Text, View } from "react-native"
 
 
@@ -16,18 +16,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons"
 
 export default function Transacoes() {
   const theme = useThemeColors()
-  const { dados } = useDadosValue()
+  const { dados, intervalo } = useDadosValue()
 
-  const ano = new Date().getFullYear()
+  
   const [isAddTransacao, setIsAddTransacao] = useState(false)
   const [menuOpened, setMenuOpened] = useState(false)
   const [selectedCategoryID, setSelectedCategoryID] = useState(-1)
   const [selectedTipoID, setSelectedTipoID] = useState(-1)
-  const [intervalo, setIntervalo] = useState<IIntervalo>({
-    nome: "Mês",
-    dataInicial: `01-01-${ano}`,
-    dataFinal: `31-12-${ano}`
-  })
 
   const totais = useMemo(() => {
     function acumulador(intervalo?: IIntervalo, isSaldo = false) {
@@ -94,8 +89,8 @@ export default function Transacoes() {
       <ScrollView contentContainerStyle={{ paddingBottom: 200, marginTop: 70, zIndex: 1 }}>
         <View style={{ marginHorizontal: 'auto', gap: 20, width: '90%' }}>
 
-          <SurfaceContainer titulo="Transações" intervalo={{intervalo, setIntervalo}}>
-            <TranslacoesResume transacoes={transacoes} categories={dados.categories} intervalo={intervalo} edit />
+          <SurfaceContainer titulo="Transações" intervalo>
+            <TranslacoesResume transacoes={transacoes} categories={dados.categories} edit />
             <Button action={() => setMenuOpened(true)} style={{width: 200, borderRadius: 10}}>{isAddTransacao ? 'mudar categoria' : '+ add transação'}</Button>
             {menuOpened &&
               <Menu 
@@ -110,7 +105,14 @@ export default function Transacoes() {
             }
             {isAddTransacao &&
               <EditTransacao
-                transacao={{ id: 0, nome: '', value: '', date: new Date().getDate().toString(), categoryID: selectedCategoryID, tipoID: selectedTipoID }}
+                transacao={{ 
+                  id: 0, 
+                  nome: '', 
+                  value: '', 
+                  date: '', 
+                  categoryID: selectedCategoryID, 
+                  tipoID: selectedTipoID 
+                }}
                 setIsEditable={setIsAddTransacao}
                 add
               />

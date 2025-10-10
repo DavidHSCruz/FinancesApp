@@ -6,6 +6,7 @@ export type IFinanceCategory = {
 
 export type IFinanceCategoryType = {
   id: number
+  data?: string
   nome: string
   planejadoValue: string
 }

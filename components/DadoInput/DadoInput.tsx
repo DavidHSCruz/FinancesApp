@@ -24,7 +24,7 @@ export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
         return acumulador + Number(item.value)
     }, 0)
 
-    const valorPlanejado = formatCurrencyBRLToNumber(tipo.planejadoValue)
+    const valorPlanejado = tipo.planejadoValue ? formatCurrencyBRLToNumber(tipo.planejadoValue) : 0
     const valorDiferenca = (valorPlanejado - valoresAcumulados)
     const barraWidth = () => {
         const porcentagem = (valoresAcumulados / valorPlanejado) * 100
@@ -72,7 +72,11 @@ export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
                         </View>
                     </View>
                 </> :
-                <EditCategory tipo={tipo} categoryID={categoryID} setIsEditable={setIsEditable} />
+                <EditCategory 
+                    tipo={tipo} 
+                    categoryID={categoryID} 
+                    setIsEditable={setIsEditable} 
+                />
             }
         </View>
     )

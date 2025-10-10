@@ -1,7 +1,7 @@
 import { useThemeColors } from "@/hooks/useThemeColors"
 import { styles } from "@/styles/dashboard"
 import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { ScrollView, Text, View } from "react-native"
 
 
@@ -15,7 +15,7 @@ import { carregarDadosStorage } from "@/utils/carregaDados"
 
 export default function Dashboard() {
   const theme = useThemeColors()
-  const { dados, setDados } = useDadosValue()
+  const { dados, setDados, intervalo } = useDadosValue()
 
   // ESSE USE EFFECT É PARA CARREGAR OS DADOS INICIAIS SE CASO PERDIDOS
   // useEffect(() => {
@@ -94,14 +94,6 @@ export default function Dashboard() {
   //     }
   //   ]))
   // }, [])
-
-  const ano = new Date().getFullYear()
-  const [intervalo, setIntervalo] = useState<IIntervalo>({
-    nome: "Ano",
-    dataInicial: `01-01-${ano}`,
-    dataFinal: `31-12-${ano}`
-  })
-
   
   useEffect(() => {
     const CHAVES_STORAGE = {
@@ -199,12 +191,12 @@ export default function Dashboard() {
         <View style={{ marginHorizontal: 'auto', gap: 20, width: '90%' }}>
 
           <SurfaceContainer titulo="Resumo">
-            <IntervalSelector intervalo={intervalo} setIntervalo={setIntervalo} />
+            <IntervalSelector />
             <DonutChart data={dadosGrafico || []}>
               {valorFormatadoBR(totais?.saldo() || 0)}
             </DonutChart>
           </SurfaceContainer>
-          <TranslacoesResume transacoes={transacoes} categories={dados.categories} intervalo={intervalo} titulo="Transações" />
+          <TranslacoesResume transacoes={transacoes} categories={dados.categories} titulo="Transações" />
 
         </View>
       </ScrollView>

@@ -1,3 +1,4 @@
+import { useDadosValue } from "@/context/dadosContext";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
@@ -53,6 +54,7 @@ function TabItem({ isFocused, iconName, onPress, theme }: TabItemProps) {
 
 export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const theme = useThemeColors()
+  const { intervalo, setIntervalo } = useDadosValue()
 
   const icons: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
     dashboard: "finance",
@@ -72,6 +74,27 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           })
           if (!isFocused && !event.defaultPrevented) {
             navigation.navigate(route.name)
+          }
+
+          const hoje = new Date()
+          const mesAtual = hoje.getMonth() + 1
+          const anoAtual = hoje.getFullYear()
+          if (route.name !== 'dashboard') {
+            if (intervalo.nome === 'Mês') return
+
+            setIntervalo({
+              nome: "Mês",
+              dataInicial: `01-${mesAtual}-${anoAtual}`,
+              dataFinal: `31-${mesAtual}-${anoAtual}`
+            })
+          }else {
+            if (intervalo.nome === 'Ano') return
+
+            setIntervalo({
+              nome: "Ano",
+              dataInicial: `01-01-${anoAtual}`,
+              dataFinal: `31-12-${anoAtual}`
+            })
           }
         }
 

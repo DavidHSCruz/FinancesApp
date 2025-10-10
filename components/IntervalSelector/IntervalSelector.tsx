@@ -1,12 +1,13 @@
 import { useThemeColors } from "@/hooks/useThemeColors"
-import { IntervaloSelector } from "@/types/intervalos"
 import { formatarData } from "@/utils/formataData"
 import { Pressable, Text, View } from "react-native"
 import { FiltroSelected } from "./FiltroSelected/FiltroSelected"
 import { styles } from "./styles"
+import { useDadosValue } from "@/context/dadosContext"
 
-export const IntervalSelector = ({intervalo, setIntervalo}: IntervaloSelector) => {
+export const IntervalSelector = () => {
     const hoje = new Date()
+    const { intervalo, setIntervalo } = useDadosValue()
     const hojeStr = hoje.toISOString().split('T')[0]
     const [ ano, mes, dia ] = hojeStr.split('-').map(Number)
     const diaDaSemana = new Date(hoje).getDay()
@@ -60,7 +61,7 @@ export const IntervalSelector = ({intervalo, setIntervalo}: IntervaloSelector) =
                     )
                 })}
             </View>
-            <FiltroSelected intervalo={intervalo} setIntervalo={setIntervalo} />
+            <FiltroSelected />
         </>
   )
 }

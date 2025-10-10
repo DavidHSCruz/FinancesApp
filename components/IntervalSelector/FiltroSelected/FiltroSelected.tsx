@@ -1,3 +1,4 @@
+import { useDadosValue } from "@/context/dadosContext"
 import { useThemeColors } from "@/hooks/useThemeColors"
 import { IIntervalo, IntervaloSelector } from "@/types/intervalos"
 import { formatarData, formatInputDataMesAno } from "@/utils/formataData"
@@ -28,11 +29,10 @@ function formataDataBR(data: string) {
 }
 
 function formataPeriodoTexto(intervalo: IIntervalo) {
-    console.log(intervalo)
     const { dataInicial: di, dataFinal: df } = intervalo
     if (di === df) return formataDataBR(di)
     if (intervalo.nome === 'Mês') {
-        const [ , mes, ano ] = di.split('-')
+        const [ dia, mes, ano ] = di.split('-')
         return `${mes}/${ano}`
     }
 
@@ -103,7 +103,7 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
 }
 
 const FiltroMes = ({intervalo, setIntervalo, podeAvancar, setPodeAvancar} : FiltroProps) => {
-    const [intervaloInput, setIntervaloInput] = useState(formataPeriodoTexto(intervalo))
+    const [intervaloInput, setIntervaloInput] = useState('')
     useEffect(() => setIntervaloInput(formataPeriodoTexto(intervalo)),[intervalo])
     const theme = useThemeColors()
     
@@ -267,8 +267,9 @@ const Filtro = ({intervalo, setIntervalo, podeAvancar, setPodeAvancar} : FiltroP
     )
 }
 
-export const FiltroSelected = ({intervalo, setIntervalo} : IntervaloSelector) => {
+export const FiltroSelected = () => {
     const [podeAvancar, setPodeAvancar] = useState(true)
+    const { intervalo, setIntervalo } = useDadosValue()
     
     useEffect(() => {
         if (intervalo.dataInicial === intervalo.dataFinal) setPodeAvancar(false)

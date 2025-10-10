@@ -13,15 +13,14 @@ import { useDadosValue } from "@/context/dadosContext"
 interface TranslacoesResumeProps {
     transacoes: IFinanceItem[]
     categories: IFinanceCategory[]
-    intervalo: IIntervalo
     titulo?: string
     style?: StyleProp<ViewStyle>
     edit?: boolean
 }
 
-export const TranslacoesResume = ({transacoes, categories, intervalo, titulo, style, edit}: TranslacoesResumeProps) => {
+export const TranslacoesResume = ({transacoes, categories, titulo, style, edit}: TranslacoesResumeProps) => {
     const theme = useThemeColors()
-    const {dados, setDados} = useDadosValue()
+    const {dados, setDados, intervalo} = useDadosValue()
     const transacoesPorIntervalo = transacoes.filter(t => {
         const [ano, mes, dia] = t.date.split('-')
         const tDate = getDiaMesAno(`${dia}-${mes}-${ano}`)

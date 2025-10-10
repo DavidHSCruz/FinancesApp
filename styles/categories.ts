@@ -18,8 +18,19 @@ export const styles = StyleSheet.create({
   saldo: {
     paddingBottom: 10,
     paddingTop: 30,
+    paddingHorizontal: 40,
     fontSize: 20,
     fontWeight: "bold",
-    textAlign: "center"
+  },
+  containerFiltro: {
+    position: 'absolute',
+    right: 40,
+    top: 25,
+    width: 120,
+    borderTopStartRadius: 20,
+    borderTopEndRadius: 20,
+    paddingBottom: 6,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 })

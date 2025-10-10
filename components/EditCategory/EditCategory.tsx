@@ -17,7 +17,7 @@ interface EditCategoryProps {
 const EditCategory = ({tipo, categoryID, setIsEditable, addType}: EditCategoryProps) => {
     const theme = useThemeColors()
     const [novoTipo, setNovoTipo] = useState(tipo)
-    const {dados, setDados} = useDadosValue()
+    const {dados, setDados, intervalo} = useDadosValue()
     const hideCheck = useMemo(() => {
         if (novoTipo.nome !== '' && novoTipo.planejadoValue !== '') return false
         return true
@@ -64,7 +64,7 @@ const EditCategory = ({tipo, categoryID, setIsEditable, addType}: EditCategoryPr
                 </Pressable>
                 {!hideCheck &&
                     <Pressable onPress={e => {
-                        if (addType) addCategoryType(dados, setDados, categoryID, novoTipo)
+                        if (addType) addCategoryType(dados, setDados, intervalo, categoryID, novoTipo)
                         else editCategoryType(novoTipo, dados, setDados, categoryID)
                         setIsEditable(false)
                     }}>

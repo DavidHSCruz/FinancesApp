@@ -3,7 +3,6 @@ import addNewItem from '@/hooks/useAddItem'
 import { useThemeColors } from '@/hooks/useThemeColors'
 import { IFinanceItem } from '@/types/Item'
 import { formatInputCurrencyBRL } from '@/utils/formatacaoNumeros'
-import { formatInputDataDiaMesAno } from '@/utils/formataData'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import React, { useMemo, useState } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
@@ -16,31 +15,36 @@ interface EditTransacaoProps {
 const EditTransacao = ({transacao, setIsEditable, add}: EditTransacaoProps) => {
     const theme = useThemeColors()
     const [newTransacao, setNewTransacao] = useState(transacao)
-    const {dados, setDados} = useDadosValue()
+    const {dados, setDados, intervalo} = useDadosValue()
     const hideCheck = useMemo(() => {
         if (newTransacao.nome !== '' && newTransacao.value !== '' &&
             newTransacao.date !== '' && newTransacao.categoryID !== -1 && newTransacao.tipoID !== -1) return false
         return true
     }, [newTransacao])
 
-
+    const [dia, setDia] = useState(new Date().getDate().toString().padStart(2, '0'))
+    const [ , mes, ano ] = intervalo.dataFinal.split('-').map(Number)
     
     return (
         <View style={{width: '100%'}}>
             <View>
                 <Text style={{color: theme.textSecondary, marginTop: 20, fontSize: 10, paddingLeft:10}}>Data:</Text>
-                <TextInput
-                    style={{color: theme.textSecondary, fontSize: 16, padding: 10, backgroundColor: theme.background}} 
-                    value={newTransacao.date}
-                    keyboardType="numeric"
-                    placeholder="Dia"
-                    placeholderTextColor={theme.placeholder}
-                    onChangeText={e => {
-                        const valor = formatInputDataDiaMesAno(e)
-                        setNewTransacao({ ...newTransacao, date: valor })
-                    }}
-                    
-                />
+                <View style={{flex: 1, flexDirection: 'row', backgroundColor: theme.background}}>
+                    <TextInput
+                        style={{color: theme.textSecondary, fontSize: 16, paddingLeft: 10, paddingVertical: 10}} 
+                        value={dia}
+                        keyboardType="numeric"
+                        placeholder="Dia"
+                        placeholderTextColor={theme.placeholder}
+                        onChangeText={e => {
+                            const limited = e.slice(0, 2)
+                            setDia(limited)
+                            setNewTransacao({ ...newTransacao, date: `${limited}/${String(mes).padStart(2, '0')}/${ano}` })
+                        }}
+                        
+                    />
+                    <Text style={{fontSize: 16, color: theme.placeholder, paddingVertical: 10}}>{`/${String(mes).padStart(2, '0')}/${ano}`}</Text>
+                </View>
                 <Text style={{color: theme.textSecondary, fontSize: 10, paddingLeft:10}}>Nome:</Text>
                 <TextInput
                     style={{color: theme.textSecondary, fontSize: 16, padding: 10, backgroundColor: theme.background}} 

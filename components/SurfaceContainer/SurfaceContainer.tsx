@@ -4,13 +4,14 @@ import { StyleProp, Text, View, ViewStyle } from 'react-native'
 import Svg, { Circle } from 'react-native-svg'
 import { FiltroSelected } from '../IntervalSelector/FiltroSelected/FiltroSelected'
 import { styles } from './styles'
+import { useDadosValue } from '@/context/dadosContext'
 
 interface SurfaceContainerProps {
     children: React.ReactNode
     titulo?: string
     cor?: string
     style?: StyleProp<ViewStyle>
-    intervalo?: {intervalo: IIntervalo, setIntervalo: React.Dispatch<React.SetStateAction<IIntervalo>>}
+    intervalo?: boolean
 }
 
 const SurfaceContainer = ({children, titulo, cor, style, intervalo: i}: SurfaceContainerProps) => {
@@ -33,7 +34,7 @@ const SurfaceContainer = ({children, titulo, cor, style, intervalo: i}: SurfaceC
                     <Text style={{ ...styles.titulo, color: theme.textSecondary }}>{tituloFormatted}</Text>
                     {i &&
                         <View style={{ position: 'absolute', right: 10 }}>
-                            <FiltroSelected intervalo={i.intervalo} setIntervalo={i.setIntervalo} />
+                            <FiltroSelected />
                         </View>
                     }
                 </View>
