@@ -3,6 +3,6 @@ export type IFinanceItem = {
   date: string
   nome: string
   value: string | number
-  categoryID?: number
+  categoryID: number
   tipoID?: number
 }

@@ -1,0 +1,86 @@
+ {
+  "items": [
+    { "id": 1, "date": "2025-01", "nome": "2° DEC N", "value": "1461", "categoryID": 1, "tipoID": 0 },
+    { "id": 2, "date": "2025-01", "nome": "PAGAMEN N", "value": "1458", "categoryID": 1, "tipoID": 0 },
+    { "id": 3, "date": "2025-01", "nome": "PAGAMEN N", "value": "1399", "categoryID": 1, "tipoID": 0 },
+    { "id": 4, "date": "2025-01", "nome": "PAGAMEN N", "value": "1454", "categoryID": 1, "tipoID": 0 },
+    { "id": 5, "date": "2025-01", "nome": "2° DEC D", "value": "1239", "categoryID": 1, "tipoID": 0 },
+    { "id": 6, "date": "2025-01", "nome": "ADIANTAM D", "value": "1177", "categoryID": 1, "tipoID": 0 },
+    { "id": 7, "date": "2025-01", "nome": "PAGAMEN D", "value": "1629", "categoryID": 1, "tipoID": 0 },
+    { "id": 8, "date": "2025-02", "nome": "PAGAMEN N", "value": "2787", "categoryID": 1, "tipoID": 0 },
+    { "id": 9, "date": "2025-02", "nome": "ADIANTAM D", "value": "1126", "categoryID": 1, "tipoID": 0 },
+    { "id": 10, "date": "2025-02", "nome": "PAGAMEN D", "value": "1008", "categoryID": 1, "tipoID": 0 },
+    { "id": 11, "date": "2025-03", "nome": "PAGAMEN N", "value": "3312", "categoryID": 1, "tipoID": 0 },
+    { "id": 12, "date": "2025-03", "nome": "ADIANTAM D", "value": "1299", "categoryID": 1, "tipoID": 0 },
+    { "id": 13, "date": "2025-03", "nome": "PAGAMEN D", "value": "1270", "categoryID": 1, "tipoID": 0 },
+    { "id": 14, "date": "2025-04", "nome": "PAGAMEN N", "value": "3312", "categoryID": 1, "tipoID": 0 },
+    { "id": 15, "date": "2025-04", "nome": "ADIANTAM D", "value": "1191", "categoryID": 1, "tipoID": 0 },
+    { "id": 16, "date": "2025-04", "nome": "PAGAMEN D", "value": "1406", "categoryID": 1, "tipoID": 0 },
+    { "id": 17, "date": "2025-05", "nome": "PAGAMEN N", "value": "3312", "categoryID": 1, "tipoID": 0 },
+    { "id": 18, "date": "2025-05", "nome": "ADIANTAM D", "value": "1180", "categoryID": 1, "tipoID": 0 },
+    { "id": 19, "date": "2025-05", "nome": "FGTS D", "value": "1449", "categoryID": 1, "tipoID": 0 },
+    { "id": 20, "date": "2025-05", "nome": "PAGAMEN D", "value": "1391", "categoryID": 1, "tipoID": 0 },
+    { "id": 21, "date": "2025-06", "nome": "PAGAMEN N", "value": "3368", "categoryID": 1, "tipoID": 0 },
+    { "id": 22, "date": "2025-06", "nome": "ADIANTAM D", "value": "1191", "categoryID": 1, "tipoID": 0 },
+    { "id": 23, "date": "2025-06", "nome": "FERIAS D", "value": "3589", "categoryID": 1, "tipoID": 0 },
+    { "id": 24, "date": "2025-06", "nome": "PAGAMEN D", "value": "1842", "categoryID": 1, "tipoID": 0 },
+    { "id": 25, "date": "2025-07", "nome": "PAGAMEN N", "value": "3416", "categoryID": 1, "tipoID": 0 },
+    { "id": 26, "date": "2025-07", "nome": "PLR N", "value": "1613", "categoryID": 1, "tipoID": 0 },
+    { "id": 27, "date": "2025-07", "nome": "restituição N", "value": "143", "categoryID": 1, "tipoID": 0 },
+    { "id": 28, "date": "2025-07", "nome": "ADIANTAM D", "value": "0", "categoryID": 1, "tipoID": 0 },
+    { "id": 29, "date": "2025-07", "nome": "PAGAMEN D", "value": "0", "categoryID": 1, "tipoID": 0 },
+    { "id": 30, "date": "2025-08", "nome": "PAGAMEN N", "value": "3311", "categoryID": 1, "tipoID": 0 },
+    { "id": 31, "date": "2025-08", "nome": "ADIANTAM D", "value": "1138", "categoryID": 1, "tipoID": 0 },
+    { "id": 32, "date": "2025-08", "nome": "Restituição D", "value": "53", "categoryID": 1, "tipoID": 0 },
+    { "id": 33, "date": "2025-08", "nome": "PAGAMEN D", "value": "2205", "categoryID": 1, "tipoID": 0 },
+    { "id": 34, "date": "2025-09", "nome": "PAGAMEN N", "value": "3311", "categoryID": 1, "tipoID": 0 },
+    { "id": 35, "date": "2025-09", "nome": "ADIANTAM D", "value": "1154", "categoryID": 1, "tipoID": 0 },
+    { "id": 36, "date": "2025-09", "nome": "PAGAMEN D", "value": "1500", "categoryID": 1, "tipoID": 0 },
+    { "id": 37, "date": "2025-10", "nome": "PAGAMEN N", "value": "3353", "categoryID": 1, "tipoID": 0 },
+    { "id": 38, "date": "2025-10", "nome": "ADIANTAM D", "value": "1261", "categoryID": 1, "tipoID": 0 },
+    { "id": 39, "date": "2025-10", "nome": "PAGAMEN D", "value": "1472", "categoryID": 1, "tipoID": 0 }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "nome": "renda",
+      "tipos": []
+    },
+    {
+      "id": 2,
+      "nome": "despesa",
+      "tipos": [
+        {
+          "id": 1,
+          "data": "2025-09",
+          "nome": "Aluguel",
+          "planejadoValue": "R$ 1.500,00"
+        },
+        {
+          "id": 2,
+          "data": "2025-09",
+          "nome": "Teste",
+          "planejadoValue": "R$ 900,00"
+        },
+        {
+          "id": 3,
+          "data": "2025-10",
+          "nome": "Salão ",
+          "planejadoValue": "R$ 500,00"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "nome": "investimento",
+      "tipos": [
+        {
+          "id": 1,
+          "data": "2025-09",
+          "nome": "Faculdade D",
+          "planejadoValue": "R$ 170,00"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,4 @@
-import { colors } from "@/constants/colors";
-import { StyleSheet } from "react-native";
+import { StyleSheet } from "react-native"
 
 export const styles = StyleSheet.create({
     container: {
@@ -15,10 +14,6 @@ export const styles = StyleSheet.create({
     },
     filtroSelected: {
         borderBottomWidth: 1,
-        borderColor:colors.text
-    },
-    text: {
-        color:colors.text
     },
     filtroContainer: {
         flexDirection: 'row', 

@@ -1,63 +1,55 @@
-import { colors } from '@/constants/colors'
+import { useDadosValue } from '@/context/dadosContext'
 import { IFinanceCategory } from '@/types/category'
-import { Picker } from '@react-native-picker/picker'
 import { useState } from 'react'
-import { Text, View } from 'react-native'
-import { DadoContainer } from '../DadoContainer/DadoContainer'
+import { View } from 'react-native'
+import Button from '../Button/Button'
+import { DadoInput } from '../DadoInput/DadoInput'
+import EditCategory from '../EditCategory/EditCategory'
 import { styles } from './styles'
 
-interface TiposPorCategoriaProps {
-    categoriasSemRenda: IFinanceCategory[]
-    CORES_POR_TIPO: {
-        renda: string;
-        investimento: string;
-        despesa: string;
-    }
-}
+const TiposPorCategoria = ({cat}: {cat: IFinanceCategory}) => {
+    const [isAddType, setIsAddType] = useState(false)
+    const { intervalo } = useDadosValue()
 
-const TiposPorCategoria = ({categoriasSemRenda, CORES_POR_TIPO}: TiposPorCategoriaProps) => {
+    const mes = intervalo.dataFinal.split('-')[1]
+    const ano = intervalo.dataFinal.split('-')[2]
+    const data = `${ano}-${mes}`
 
-    let meses = Array.from({length: 12}).map((_, i) => new Date(0, i).toLocaleString("pt-BR", { month: "long" }))
-    meses = meses.map(mes => mes.charAt(0).toUpperCase() + mes.slice(1))
-    const dez = meses.slice(0, 1)
-    meses = meses.slice(1).concat(dez)
-    console.log(meses)
-
-    const hoje = new Date();
-    const mesAtual = hoje.toLocaleString("pt-BR", { month: "long" })
-
-    const [tipoSelecionado, setTipoSelecionado] = useState('')
-
-    function handleChange(itemValue: any, field: string) {
-        console.log(itemValue, field)
-    }
-
-
+    const tiposPorData = cat.tipos?.filter(t => t.informacoes.find(d => d.data === data))
+    
     return (
-        <View style={{padding:10}}>
-            <Picker
-            style={{color: colors.placeholder}} 
-            selectedValue={tipoSelecionado}
-            onValueChange={(itemValue, itemIndex) => {
-                setTipoSelecionado(itemValue)
-            }
-            }>
-                <Picker.Item label="Mês" value="" />
-                {meses.map((mes, index) => (
-                    <Picker.Item key={index} label={mes} value={mes} />
-                    ))
+        <>
+            <View style={{...styles.container, width: '100%'}}>
+                {tiposPorData?.map((item) => (
+                    <DadoInput
+                        key={item.id}
+                        tipo={item}
+                        categoryID={cat.id}
+                    />
+                ))}
+                {isAddType &&
+                    <EditCategory 
+                        tipo={
+                            {
+                                id: 0,
+                                nome: '',
+                                informacoes: [
+                                    {
+                                        data: '',
+                                        planejadoValue: ''
+                                    }
+                                ]
+                            }
+                        }
+                        categoryID={cat.id}
+                        setIsEditable={setIsAddType}
+                        addType
+                    />
                 }
-            </Picker>
-            <Text style={styles.text}>MARÇO DE 2025</Text>
-            {categoriasSemRenda.map((category, index) => (
-                <DadoContainer 
-                key={index} 
-                category={category} 
-                cor={CORES_POR_TIPO[category.nome as keyof typeof CORES_POR_TIPO]} />
-            ))
-            }
-        </View>
-    );
+            </View>
+            <Button action={() => setIsAddType(true)}>+ add type</Button>
+        </>
+    )
 }
 
 export default TiposPorCategoria
