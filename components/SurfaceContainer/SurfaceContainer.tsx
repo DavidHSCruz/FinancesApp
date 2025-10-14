@@ -1,10 +1,8 @@
 import { useThemeColors } from '@/hooks/useThemeColors'
-import { IIntervalo } from '@/types/intervalos'
 import { StyleProp, Text, View, ViewStyle } from 'react-native'
 import Svg, { Circle } from 'react-native-svg'
 import { FiltroSelected } from '../IntervalSelector/FiltroSelected/FiltroSelected'
 import { styles } from './styles'
-import { useDadosValue } from '@/context/dadosContext'
 
 interface SurfaceContainerProps {
     children: React.ReactNode

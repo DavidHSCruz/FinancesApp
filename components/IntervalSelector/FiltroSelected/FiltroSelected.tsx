@@ -3,6 +3,7 @@ import { useThemeColors } from "@/hooks/useThemeColors"
 import { IIntervalo, IntervaloSelector } from "@/types/intervalos"
 import { formatarData, formatInputDataMesAno } from "@/utils/formataData"
 import { dataValidation } from "@/utils/validacoes"
+import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { useEffect, useState } from "react"
 import { Pressable, StyleProp, Text, TextInput, TextStyle, View } from "react-native"
 import { styles } from "./styles"
@@ -115,18 +116,21 @@ const FiltroMes = ({intervalo, setIntervalo, podeAvancar, setPodeAvancar} : Filt
                 tipo='<'
                 setPodeAvancar={setPodeAvancar}
             />
-            <TextInput 
-                style={{paddingVertical: 10, color: theme.textSecondary}}
-                value={intervaloInput}
-                placeholder="MM/AAAA"
-                onChange={e => {
-                    setIntervaloInput(formatInputDataMesAno(e.nativeEvent.text))
-                }}
-                onBlur={e => {
-                    const [ mes, ano ] = intervaloInput.split('/')
-                    setIntervalo({...intervalo, dataInicial: `01-${mes}-${ano}`, dataFinal: `30-${mes}-${ano}`})
-                }}
-            />
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <TextInput 
+                    style={{paddingVertical: 10, color: theme.textSecondary}}
+                    value={intervaloInput}
+                    placeholder="MM/AAAA"
+                    onChange={e => {
+                        setIntervaloInput(formatInputDataMesAno(e.nativeEvent.text))
+                    }}
+                    onBlur={e => {
+                        const [ mes, ano ] = intervaloInput.split('/')
+                        setIntervalo({...intervalo, dataInicial: `01-${mes}-${ano}`, dataFinal: `30-${mes}-${ano}`})
+                    }}
+                />
+                <MaterialCommunityIcons name="pencil" size={15} color={theme.placeholder} />
+            </View>
             {podeAvancar ?
                 <Change
                     intervalo={intervalo}

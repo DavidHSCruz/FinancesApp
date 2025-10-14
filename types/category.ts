@@ -6,7 +6,11 @@ export type IFinanceCategory = {
 
 export type IFinanceCategoryType = {
   id: number
-  data?: string
   nome: string
+  informacoes: IDataType[]
+}
+
+type IDataType = {
+  data: string
   planejadoValue: string
 }

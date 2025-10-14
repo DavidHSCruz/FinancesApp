@@ -16,8 +16,14 @@ interface EditCategoryProps {
 }
 const EditCategory = ({tipo, categoryID, setIsEditable, addType}: EditCategoryProps) => {
     const theme = useThemeColors()
-    const [novoTipo, setNovoTipo] = useState(tipo)
     const {dados, setDados, intervalo} = useDadosValue()
+
+    const data = intervalo.dataFinal.split('-')[2] + '-' + intervalo.dataFinal.split('-')[1]
+
+    const [novoTipo, setNovoTipo] = useState({
+        nome: tipo.nome,
+        planejadoValue: tipo.informacoes.find(inf => inf.data === data)?.planejadoValue || ''
+    })
     const hideCheck = useMemo(() => {
         if (novoTipo.nome !== '' && novoTipo.planejadoValue !== '') return false
         return true
@@ -57,15 +63,18 @@ const EditCategory = ({tipo, categoryID, setIsEditable, addType}: EditCategoryPr
             </View>
             <View style={{flex: 1, flexDirection: 'row', gap: 10, position: 'absolute', top: 10, right: 0}}>
                 <Pressable onPress={e => {
-                    setNovoTipo(tipo)
+                    setNovoTipo({
+                        nome: tipo.nome,
+                        planejadoValue: ''
+                    })
                     setIsEditable(false)
                 }}>
                     <MaterialCommunityIcons name="close" size={20} color={theme.placeholder} />
                 </Pressable>
                 {!hideCheck &&
                     <Pressable onPress={e => {
-                        if (addType) addCategoryType(dados, setDados, intervalo, categoryID, novoTipo)
-                        else editCategoryType(novoTipo, dados, setDados, categoryID)
+                        if (addType) addCategoryType(dados, setDados, data, categoryID, novoTipo)
+                        else editCategoryType(tipo, novoTipo, dados, setDados, data, categoryID)
                         setIsEditable(false)
                     }}>
                         <MaterialCommunityIcons name="check" size={20} color={theme.renda} />

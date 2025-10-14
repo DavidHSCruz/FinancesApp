@@ -15,17 +15,24 @@ interface DadoContainerProps {
 }
 export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
     const theme = useThemeColors()
-    const { dados } = useDadosValue()
+    const { dados, intervalo } = useDadosValue()
     const [menuOpened, setMenuOpened] = useState(false)
     const [isEditable, setIsEditable] = useState(false)
+    
+    const data = intervalo.dataFinal.split('-')[2] + '-' + intervalo.dataFinal.split('-')[1]
 
-    const itemDaCategoria = dados.items.filter(i => i.categoryID === categoryID).filter(t => t.tipoID === tipo.id)
+    const itemsPorData = dados.items.filter(i => i.date.startsWith(data))
+    const itemDaCategoria = itemsPorData
+        .filter(i => i.categoryID === categoryID)
+        .filter(t => t.tipoID === tipo.id)
+
     const valoresAcumulados = itemDaCategoria.reduce((acumulador, item) => {
         return acumulador + Number(item.value)
     }, 0)
 
-    const valorPlanejado = tipo.planejadoValue ? formatCurrencyBRLToNumber(tipo.planejadoValue) : 0
-    const valorDiferenca = (valorPlanejado - valoresAcumulados)
+    const valorPlanejado = tipo.informacoes.find(inf => inf.data === data)?.planejadoValue ? formatCurrencyBRLToNumber(tipo.informacoes.find(inf => inf.data === data)?.planejadoValue || '0') : 0
+    const valorDiferenca = valorPlanejado !== 0 && valoresAcumulados !== 0 ? (valorPlanejado - valoresAcumulados) : undefined
+    
     const barraWidth = () => {
         const porcentagem = (valoresAcumulados / valorPlanejado) * 100
   
@@ -35,8 +42,8 @@ export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
         return porcentagem
     }
     const barraColor = () => {
-        if (valorDiferenca > 0) return theme.renda
-        if (valorDiferenca === 0) return theme.placeholder
+        if (valorDiferenca === undefined) return theme.placeholder
+        if (valorDiferenca > 0 || valorDiferenca === 0) return theme.renda
         if (valorDiferenca < 0) return theme.despesa
         return theme.placeholder
     }
@@ -48,11 +55,12 @@ export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
                     <View style={{flex: 1, flexDirection: 'row', padding: 5, marginLeft: 5, justifyContent: 'space-between'}}>
                             <View>
                                 <Text style={{color: theme.textSecondary, fontSize: 16}}>{tipo.nome}</Text>
-                                <Text style={{color: theme.textSecondary, fontSize: 12}}>Planejado: {tipo.planejadoValue}</Text>
+                                <Text style={{color: theme.textSecondary, fontSize: 12}}>Planejado: {tipo.informacoes.find(i => i.data === data)?.planejadoValue}</Text>
                             </View>
                         <Pressable style={{width: 30, alignItems: 'flex-end'}} onPress={e => setMenuOpened(!menuOpened)}>
                             <MaterialIcons name="more-vert" size={20} color={theme.textPrimary} />
                         </Pressable>
+
                         {menuOpened && 
                             <Menu 
                                 setMenuOpened={setMenuOpened}
@@ -61,16 +69,19 @@ export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
                                 categoryID={categoryID} 
                             />
                         }
+
                     </View>
+
                     <View style={{position: 'relative', marginBottom: 15}}>
                         <View style={{ ...styles.barraBg, backgroundColor: `${barraColor()}30`, borderRadius: 10, overflow: 'hidden' }}>
-                            <Text style={{color: barraColor(), textAlign: 'right', marginRight: 10, fontSize: 10}}>{valorFormatadoBR(valorDiferenca)}</Text>
+                            <Text style={{color: barraColor(), textAlign: 'right', marginRight: 10, fontSize: 10}}>{valorFormatadoBR(valorDiferenca === undefined ? 0 : valorDiferenca)}</Text>
 
-                            <View style={{...styles.barraBg, backgroundColor: barraColor(), width: `${barraWidth()}%`}}>
+                            <View style={{...styles.barraBg, backgroundColor: valorDiferenca === undefined ? theme.placeholder : barraColor(), width: `${barraWidth()}%`}}>
                                 <Text style={{color: theme.surface, textAlign: 'right', marginRight: 10, fontSize: 10}}>{valorFormatadoBR(valoresAcumulados)}</Text>
                             </View>
                         </View>
                     </View>
+
                 </> :
                 <EditCategory 
                     tipo={tipo} 
@@ -84,7 +95,7 @@ export const DadoInput = ({ tipo, categoryID }: DadoContainerProps) => {
 
 const Menu = ({setMenuOpened, setIsEditable, tipoID, categoryID}: {setMenuOpened: React.Dispatch<React.SetStateAction<boolean>>, setIsEditable: React.Dispatch<React.SetStateAction<boolean>>, tipoID: number, categoryID: number}) => {
     const theme = useThemeColors()
-    const {dados, setDados} = useDadosValue()
+    const {dados, setDados, intervalo} = useDadosValue()
 
     return (
         <View style={{...styles.menu, backgroundColor: theme.background}}>
@@ -104,7 +115,7 @@ const Menu = ({setMenuOpened, setIsEditable, tipoID, categoryID}: {setMenuOpened
             <Pressable 
                 style={{flex: 1, flexDirection: 'row', gap: 10, paddingHorizontal: 10}}
                 onPress={e => {
-                    deleteCategoryType(dados, setDados, tipoID, categoryID)
+                    deleteCategoryType(dados, setDados, intervalo, tipoID, categoryID)
                     setMenuOpened(false)
                 }
             }>

@@ -10,7 +10,7 @@ export default function addNewItem(
   newItem: IFinanceItem
 ) {
   const items = dados.items
-  const ultimoID = items.at(-1)!.id || 0
+  const ultimoID = items.at(-1)?.id
   
   let newItemAtualizado: IFinanceItem = {
     id: ultimoID !== undefined ? ultimoID + 1 : 1,

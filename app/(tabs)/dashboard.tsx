@@ -16,84 +16,6 @@ import { carregarDadosStorage } from "@/utils/carregaDados"
 export default function Dashboard() {
   const theme = useThemeColors()
   const { dados, setDados, intervalo } = useDadosValue()
-
-  // ESSE USE EFFECT É PARA CARREGAR OS DADOS INICIAIS SE CASO PERDIDOS
-  // useEffect(() => {
-  //   AsyncStorage.setItem('@finance:items', JSON.stringify([
-  //     {
-  //       id: 1,
-  //       date: "2025-07-24",
-  //       nome: "Salário",
-  //       value: 3500,
-  //       categoryID: 1,
-  //       tipoID: 1
-  //     },
-  //     {
-  //       id: 2,
-  //       date: "2025-07-24",
-  //       nome: "Aluguel",
-  //       value: 1200,
-  //       categoryID: 2,
-  //       tipoID: 1
-  //     },
-  //     {
-  //       id: 3,
-  //       date: "2025-07-24",
-  //       nome: "Compra de ações",
-  //       value: 500,
-  //       categoryID: 3,
-  //       tipoID: 1
-  //     }
-  //   ]))
-  //   AsyncStorage.setItem('@finance:categories', JSON.stringify([
-  //     {
-  //       id: 1,
-  //       nome: "renda",
-  //       tipos: [
-  //         {
-  //           id: 1,
-  //           nome: "Salário"
-  //         },
-  //         {
-  //           id: 2,
-  //           nome: "Freelance"
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       id: 2,
-  //       nome: "despesa",
-  //       tipos: [
-  //         {
-  //           id: 1,
-  //           nome: "Aluguel",
-  //           planejadoValue: "R$ 1.389,55"
-  //         },
-  //         {
-  //           id: 2,
-  //           nome: "Supermercado",
-  //           planejadoValue: "R$ 905,00"
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       id: 3,
-  //       nome: "investimento",
-  //       tipos: [
-  //         {
-  //           id: 1,
-  //           nome: "Ações",
-  //           planejadoValue: ""
-  //         },
-  //         {
-  //           id: 2,
-  //           nome: "Fundos Imobiliários",
-  //           planejadoValue: "0,00"
-  //         }
-  //       ]
-  //     }
-  //   ]))
-  // }, [])
   
   useEffect(() => {
     const CHAVES_STORAGE = {
@@ -109,9 +31,38 @@ export default function Dashboard() {
             items: items || [],
             categories: categories || []
         })
+
     }
     carregarDados()
   }, [setDados])
+
+  // useEffect(() => {
+  //   const categorias = [
+  //     {
+  //       id: 1,
+  //       nome: "renda",
+  //       tipos: []
+  //     },
+  //     {
+  //       id: 2,
+  //       nome: "despesa",
+  //       tipos: []
+  //     },
+  //     {
+  //       id: 3,
+  //       nome: "investimento",
+  //       tipos: []
+  //     }
+  //   ]
+    
+  //   AsyncStorage.setItem('@finance:categories', JSON.stringify(categorias))
+  // }, [])
+
+  // useEffect(() => {
+  //   const items = []
+    
+  //   AsyncStorage.setItem('@finance:items', JSON.stringify(items))
+  // }, [])
 
   const totais = useMemo(() => {
     function acumulador(intervalo?: IIntervalo, isSaldo = false) {
@@ -120,7 +71,8 @@ export default function Dashboard() {
       let totalInvestimento = 0
 
       dados.items.forEach(item => {
-        if (item.tipoID && item.categoryID) {
+        if (!item.categoryID) return
+        if (item.tipoID || item.tipoID === 0) {
           let categoria = dados.categories.find(c => c.id === item.categoryID)
           if (!categoria) return
           

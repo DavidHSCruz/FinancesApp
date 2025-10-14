@@ -1,14 +1,13 @@
+import { useDadosValue } from "@/context/dadosContext"
+import deleteItem from "@/hooks/useDeleteItem"
 import { useThemeColors } from "@/hooks/useThemeColors"
 import { IFinanceCategory } from "@/types/category"
-import { IIntervalo } from "@/types/intervalos"
 import { IFinanceItem } from "@/types/Item"
 import { valorFormatadoBR } from "@/utils/formatacaoNumeros"
 import { formatarDataBR, getDiaMesAno } from "@/utils/formataData"
 import { Fragment } from "react"
 import { Pressable, StyleProp, Text, View, ViewStyle } from "react-native"
 import { styles } from "./styles"
-import deleteItem from "@/hooks/useDeleteItem"
-import { useDadosValue } from "@/context/dadosContext"
 
 interface TranslacoesResumeProps {
     transacoes: IFinanceItem[]
@@ -76,6 +75,7 @@ export const TranslacoesResume = ({transacoes, categories, titulo, style, edit}:
                                 const categoria = categories.find(c => c.id === t.categoryID)
                                 const tipo = categoria?.tipos.find(ct => ct.id === t.tipoID)
                                 
+                                
                                 const cor = () => {
                                     if (categoria?.nome === 'renda') return theme.renda
                                     if (categoria?.nome === 'despesa') return theme.despesa
@@ -89,7 +89,7 @@ export const TranslacoesResume = ({transacoes, categories, titulo, style, edit}:
                                         style={{ ...styles.container, backgroundColor: `${cor()}30` }}
                                         onPress={e => { edit && deleteItem(dados, setDados, t) }}
                                     >
-                                        <Text style={{color: cor()}}>{tipo?.nome}</Text>
+                                        <Text style={{color: cor()}}>{tipo ? tipo?.nome : 'Renda'}</Text>
                                         <Text style={{color: cor()}}>{t.nome}</Text>
                                         <Text style={{color: cor()}}>{valorFormatadoBR(Number(t.value))}</Text>
                                     </Pressable>

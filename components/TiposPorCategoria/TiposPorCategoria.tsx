@@ -1,3 +1,4 @@
+import { useDadosValue } from '@/context/dadosContext'
 import { IFinanceCategory } from '@/types/category'
 import { useState } from 'react'
 import { View } from 'react-native'
@@ -8,11 +9,18 @@ import { styles } from './styles'
 
 const TiposPorCategoria = ({cat}: {cat: IFinanceCategory}) => {
     const [isAddType, setIsAddType] = useState(false)
+    const { intervalo } = useDadosValue()
+
+    const mes = intervalo.dataFinal.split('-')[1]
+    const ano = intervalo.dataFinal.split('-')[2]
+    const data = `${ano}-${mes}`
+
+    const tiposPorData = cat.tipos?.filter(t => t.informacoes.find(d => d.data === data))
     
     return (
         <>
             <View style={{...styles.container, width: '100%'}}>
-                {cat.tipos.map((item) => (
+                {tiposPorData?.map((item) => (
                     <DadoInput
                         key={item.id}
                         tipo={item}
@@ -21,7 +29,18 @@ const TiposPorCategoria = ({cat}: {cat: IFinanceCategory}) => {
                 ))}
                 {isAddType &&
                     <EditCategory 
-                        tipo={{ id: 0, data: '', nome: '', planejadoValue: '' }}
+                        tipo={
+                            {
+                                id: 0,
+                                nome: '',
+                                informacoes: [
+                                    {
+                                        data: '',
+                                        planejadoValue: ''
+                                    }
+                                ]
+                            }
+                        }
                         categoryID={cat.id}
                         setIsEditable={setIsAddType}
                         addType

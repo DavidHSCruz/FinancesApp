@@ -1,32 +1,52 @@
-import { IFinanceCategoryType } from "@/types/category"
 import { IDados } from "@/types/dados"
-import { IIntervalo } from "@/types/intervalos"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function addCategoryType(
   dados: IDados, 
   setDados: React.Dispatch<React.SetStateAction<IDados>>, 
-  intervalo: IIntervalo,
+  data: string,
   categoryID: number,
-  novoTipo: IFinanceCategoryType
+  novoTipo: {
+    nome: string,
+    planejadoValue: string
+  }
 ){
+  const tipos = dados.categories.filter(cat => cat.id === categoryID)[0].tipos
 
-  function adicionaTipo() {
-      const tipos = dados.categories.filter(cat => cat.id === categoryID)[0].tipos
+  function editTipos() {
       const ultimoID = tipos.at(-1)?.id || 0
-      const mes = intervalo.dataFinal.split('-')[1]
-      const ano = intervalo.dataFinal.split('-')[2]
-      const data = `${mes}/${ano}`
-      
-      return [ 
-        ...tipos, 
+      const novoTipoUpdate = [
+        ...tipos,
         {
           id: ultimoID !== undefined ? ultimoID + 1 : 1,
-          data: data,
           nome: novoTipo.nome,
-          planejadoValue: novoTipo.planejadoValue
+          informacoes: [
+            {
+              data: data,
+              planejadoValue: novoTipo.planejadoValue
+            }
+          ]
         }
       ]
+
+      if (tipos.length === 0) {
+        return novoTipoUpdate
+
+      }else {
+        const existe = tipos.find(t => t.nome === novoTipo.nome)
+        if (existe) {
+          const existeData = existe.informacoes.find(d => d.data === data)
+          if (!existeData) {
+            tipos.find(t => t.nome === novoTipo.nome)?.informacoes.push({
+              data: data,
+              planejadoValue: novoTipo.planejadoValue
+            })
+          }
+          return [...tipos]
+        }else {
+          return novoTipoUpdate
+        }
+      }
     }
 
   if (novoTipo.nome === '' || novoTipo.planejadoValue === '') return
@@ -35,7 +55,7 @@ export default function addCategoryType(
     category.id === categoryID ?
       { 
         ...category,
-        tipos: adicionaTipo()
+        tipos: editTipos()
       }
       : category
   )

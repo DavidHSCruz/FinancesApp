@@ -26,9 +26,10 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     right: 40,
     top: 25,
-    width: 120,
+    width: 150,
     borderTopStartRadius: 20,
     borderTopEndRadius: 20,
+    paddingHorizontal: 5,
     paddingBottom: 6,
     alignItems: 'center',
     justifyContent: 'center'

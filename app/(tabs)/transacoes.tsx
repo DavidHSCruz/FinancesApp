@@ -91,7 +91,14 @@ export default function Transacoes() {
 
           <SurfaceContainer titulo="Transações" intervalo>
             <TranslacoesResume transacoes={transacoes} categories={dados.categories} edit />
-            <Button action={() => setMenuOpened(true)} style={{width: 200, borderRadius: 10}}>{isAddTransacao ? 'mudar categoria' : '+ add transação'}</Button>
+            <Button 
+              action={() => {
+                setSelectedCategoryID(-1)
+                setMenuOpened(true)
+              }}
+              style={{width: 200, borderRadius: 10}}
+            >{isAddTransacao ? 'mudar categoria' : '+ add transação'}
+            </Button>
             {menuOpened &&
               <Menu 
                 setMenuOpened={setMenuOpened}
@@ -114,6 +121,7 @@ export default function Transacoes() {
                   tipoID: selectedTipoID 
                 }}
                 setIsEditable={setIsAddTransacao}
+                setSelectedCategoryID={setSelectedCategoryID}
                 add
               />
             }
@@ -137,6 +145,17 @@ interface MenuProps {
 
 const Menu = ({setMenuOpened, categories, selectedCategoryID, setSelectedCategoryID,isAddTransacao, setIsAddTransacao, setSelectedTipoID}: MenuProps) => {
     const theme = useThemeColors()
+    const { intervalo } = useDadosValue()
+
+    const data = intervalo.dataFinal.split('-')[2] + '-' + intervalo.dataFinal.split('-')[1]
+
+    useEffect(() => {
+      if (selectedCategoryID === 1) {
+        setSelectedTipoID(0)
+        setIsAddTransacao(true)
+        setMenuOpened(false)
+      }
+    }, [selectedCategoryID, setSelectedTipoID, setIsAddTransacao, setMenuOpened])
 
     return (
         <View style={{
@@ -147,7 +166,10 @@ const Menu = ({setMenuOpened, categories, selectedCategoryID, setSelectedCategor
           borderRadius: 5,
           zIndex: 1, backgroundColor: theme.background
         }}>
-            <Pressable style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}} onPress={e => setMenuOpened(false)}>
+            <Pressable 
+              style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}} 
+              onPress={e => setMenuOpened(false)}
+            >
                 <Text style={{color:theme.textSecondary}}>{isAddTransacao ? 'mudar categoria' : '+ add transação'}</Text>
                 <MaterialCommunityIcons name="close" size={20} color={theme.placeholder} />
             </Pressable>
@@ -172,20 +194,26 @@ const Menu = ({setMenuOpened, categories, selectedCategoryID, setSelectedCategor
                   }>
                       <Text style={{color: cor()}}>{cat.nome}</Text>
                   </Pressable>
-                    {selectedCategoryID === cat.id &&
-                      cat.tipos.map(tipo => (
-                        <Pressable 
-                          key={tipo.id}
-                          style={{paddingVertical: 10, backgroundColor: theme.background, borderRadius: 5, paddingHorizontal: 10, marginBottom: 10}}
-                          onPress={e => {
-                              setSelectedTipoID(tipo.id)
-                              setIsAddTransacao(true)
-                              setMenuOpened(false)
-                            }
-                          }>
-                            <Text style={{color: cor()}}>{tipo.nome}</Text>
-                        </Pressable>
-                      ))
+                    {selectedCategoryID === cat.id && selectedCategoryID !== 1 &&
+                            
+                      cat.tipos.map(tipo => {
+                        const existe = tipo.informacoes.some(info => info.data === data)
+
+                        if (!existe) return null
+                        return(
+                          <Pressable 
+                            key={tipo.id}
+                            style={{paddingVertical: 10, backgroundColor: theme.background, borderRadius: 5, paddingHorizontal: 10, marginBottom: 10}}
+                            onPress={e => {
+                                setSelectedTipoID(tipo.id)
+                                setIsAddTransacao(true)
+                                setMenuOpened(false)
+                              }
+                            }>
+                              <Text style={{color: cor()}}>{tipo.nome}</Text>
+                          </Pressable>
+                        )
+                      })
                     }
                   </View>
                 </Fragment>

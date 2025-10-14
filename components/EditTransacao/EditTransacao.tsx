@@ -10,21 +10,24 @@ import { Pressable, Text, TextInput, View } from 'react-native'
 interface EditTransacaoProps {
     transacao: IFinanceItem
     setIsEditable: React.Dispatch<React.SetStateAction<boolean>>
+    setSelectedCategoryID: React.Dispatch<React.SetStateAction<number>>
     add?: boolean
 }
-const EditTransacao = ({transacao, setIsEditable, add}: EditTransacaoProps) => {
+const EditTransacao = ({transacao, setIsEditable, setSelectedCategoryID, add}: EditTransacaoProps) => {
     const theme = useThemeColors()
-    const [newTransacao, setNewTransacao] = useState(transacao)
     const {dados, setDados, intervalo} = useDadosValue()
+
+    const [dia, setDia] = useState(new Date().getDate().toString().padStart(2, '0'))
+    const [ , mes, ano ] = intervalo.dataFinal.split('-').map(Number)
+
+    const [newTransacao, setNewTransacao] = useState({...transacao, date: `${dia}/${String(mes).padStart(2, '0')}/${ano}`})
+
     const hideCheck = useMemo(() => {
         if (newTransacao.nome !== '' && newTransacao.value !== '' &&
             newTransacao.date !== '' && newTransacao.categoryID !== -1 && newTransacao.tipoID !== -1) return false
         return true
     }, [newTransacao])
 
-    const [dia, setDia] = useState(new Date().getDate().toString().padStart(2, '0'))
-    const [ , mes, ano ] = intervalo.dataFinal.split('-').map(Number)
-    
     return (
         <View style={{width: '100%'}}>
             <View>
@@ -70,6 +73,7 @@ const EditTransacao = ({transacao, setIsEditable, add}: EditTransacaoProps) => {
             <View style={{flex: 1, flexDirection: 'row', gap: 10, position: 'absolute', top: 10, right: 0}}>
                 <Pressable onPress={e => {
                     setNewTransacao(transacao)
+                    setSelectedCategoryID(-1)
                     setIsEditable(false)
                 }}>
                     <MaterialCommunityIcons name="close" size={20} color={theme.placeholder} />
@@ -78,6 +82,7 @@ const EditTransacao = ({transacao, setIsEditable, add}: EditTransacaoProps) => {
                     <Pressable onPress={e => {
                         if (add) addNewItem(dados, setDados, newTransacao)
                         //else editItem(item, dados, setDados, editItem)
+                        setSelectedCategoryID(-1)
                         setIsEditable(false)
                     }}>
                         <MaterialCommunityIcons name="check" size={20} color={theme.renda} />
