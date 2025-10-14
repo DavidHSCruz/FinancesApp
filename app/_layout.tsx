@@ -1,6 +1,7 @@
 import { colors } from "@/constants/colors"
 import { DadosProvider } from "@/context/dadosContext"
 import { Stack } from "expo-router"
+import { StatusBar } from "react-native"
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaView } from "react-native-safe-area-context"
 
@@ -9,13 +10,9 @@ export default function RootLayout() {
     <DadosProvider>
       <GestureHandlerRootView>
         <SafeAreaView style={{ flex: 1 }}>
-          <Stack screenOptions={
-            {
-              statusBarBackgroundColor: colors.primary,
-              statusBarStyle: 'light',
-            }
-          }>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
+          <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
               <Stack.Screen name="+not-found" />
           </Stack>
         </SafeAreaView>

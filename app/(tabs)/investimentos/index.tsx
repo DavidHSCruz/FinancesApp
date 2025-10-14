@@ -6,7 +6,7 @@ import addNewItem from "@/hooks/useAddItem"
 import { IFinanceItem } from "@/types/Item"
 import { useEffect, useState } from "react"
 import { FlatList, Text, View } from "react-native"
-import { styles } from "./styles"
+import { styles } from "../../../styles/investimentos"
 
 function selectColor(categoria: 'renda' | 'despesa' | 'investimento') {
   switch (categoria) {

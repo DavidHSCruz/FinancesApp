@@ -2,9 +2,8 @@ import { colors } from '@/constants/colors'
 import { useDadosValue } from '@/context/dadosContext'
 import addCategoryType from '@/hooks/useAddCategoryType'
 import { IFinanceCategory } from '@/types/category'
-import { AntDesign } from '@expo/vector-icons'
 import { useEffect, useState } from 'react'
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 
 interface MenuAddProps {
     action: () => void
@@ -18,7 +17,6 @@ export const MenuAdd = ({ action }: MenuAddProps) => {
             setListaDeCategoriasSemRenda(dados.categories.filter(cat => cat.nome !== 'renda'))
         }
     }, [dados])
-    const [inputNovaCategoriaValue, setInputNovaCategoriaValue] = useState('')
 
     return (
         <>
@@ -39,22 +37,6 @@ export const MenuAdd = ({ action }: MenuAddProps) => {
                         </Pressable>
                     )
                 })}
-                <View style={{flex: 1, flexDirection: 'row', gap: 20}}>
-                    <TextInput 
-                        style={{ marginLeft: 20, color: colors.text }} 
-                        placeholder='Nova Categoria...' 
-                        placeholderTextColor={colors.placeholder} 
-                        onChange={e => setInputNovaCategoriaValue(e.nativeEvent.text)}
-                        value={inputNovaCategoriaValue}
-                    />
-                    <Pressable
-                        style={{justifyContent:'center'}}
-                        onPress={() => {
-                            action()
-                    }}>
-                        <AntDesign name="checkcircle" size={30} color={colors.primary} />
-                    </Pressable>
-                </View>
             </View>
         </>
     );

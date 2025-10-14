@@ -31,7 +31,19 @@ function DonutChart({
     .outerRadius(outerRadius)
     .padAngle(0.05)
 
-  const arcs = pieGenerator(data)
+  const valores = data.map((item) => item.value)
+  const total = valores.reduce((acc, value) => acc + value, 0)
+  let arcs
+  if (total === 0) {
+    arcs = pieGenerator([{
+      name: '',
+      value: 1,
+      valueReais: 'R$ 0,00',
+      color: colors.placeholder
+    }])
+  }else {
+    arcs = pieGenerator(data)
+  }
 
   const centerX = width / 2
   const centerY = height / 2
@@ -46,7 +58,7 @@ function DonutChart({
 
             return (
               <G key={`arc-${index}`}>
-                <Path d={path!} fill={data[index].color} />
+                <Path d={path!} fill={arc.data.color} />
                 {arc.endAngle - arc.startAngle > 0.2 && (
                   <>
                     <SvgText
@@ -56,7 +68,7 @@ function DonutChart({
                         fontSize="15"
                         textAnchor="middle"
                     >
-                        {data[index].name}
+                        {arc.data.name}
                     </SvgText>
                     <SvgText
                         x={0}
@@ -77,7 +89,7 @@ function DonutChart({
                         fontSize="12"
                         textAnchor="middle"
                     >
-                        {data[index].valueReais}
+                        {arc.data.valueReais}
                     </SvgText>
                   </>
                 )}

@@ -30,7 +30,7 @@ export default function editItem(
   const id = itemEditado.id
   const newList = dados.items.map((item) => item.id === id ? itemEditado : item)
   
-  itemEditado.date = `${dia}/${mes}`
+  itemEditado.date = `${dia}-${mes}`
   itemEditado.value = valorFormatadoDB(itemEditado.value.toString())
   
   setDados({
