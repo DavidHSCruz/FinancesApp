@@ -1,7 +1,7 @@
 import { useDadosValue } from "@/context/dadosContext"
 import { useThemeColors } from "@/hooks/useThemeColors"
 import { IIntervalo, IntervaloSelector } from "@/types/intervalos"
-import { formatarData, formatInputDataMesAno } from "@/utils/formataData"
+import { formatarData, formatInputDataDiaMesAno, formatInputDataMesAno } from "@/utils/formataData"
 import { dataValidation } from "@/utils/validacoes"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { useEffect, useState } from "react"
@@ -70,8 +70,7 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
     }
 
     function handleChange(e: string, dataInicial: boolean) {
-        let numeros = e.replace(/\D/g, '')
-        numeros = numeros.substring(0, 8)
+        const numeros = formatInputDataDiaMesAno(e)
 
         setIntervaloInput({ ...intervaloInput, [dataInicial ? 'dataInicial' : 'dataFinal']: numeros })
     }
@@ -83,20 +82,22 @@ const FiltroPeriodo = ({intervalo, setIntervalo}: IntervaloSelector) => {
                 <TextInput
                     style={{color: theme.textPrimary}}
                     onChange={e => handleChange(e.nativeEvent.text, true)}
-                    onBlur={e => intervaloInput.dataInicial !== '' && inputBlur(true)}
+                    onBlur={e => intervaloInput.dataInicial !== '' && intervaloInput.dataInicial !== undefined && inputBlur(true)}
                     placeholder="DD/MM/AAAA"
                     placeholderTextColor={theme.placeholder}
                     value={intervaloInput.dataInicial}
                 />
+                <MaterialCommunityIcons name="pencil" size={15} color={theme.placeholder} />
                 <Text style={{color: theme.textPrimary}}>-</Text>
                 <TextInput
                     style={{color: theme.textPrimary}}
                     onChange={e => handleChange(e.nativeEvent.text, false)}
-                    onBlur={e => intervaloInput.dataFinal !== '' && inputBlur(false)}
+                    onBlur={e => intervaloInput.dataFinal !== '' && intervaloInput.dataFinal !== undefined && inputBlur(false)}
                     placeholder="DD/MM/AAAA"
                     placeholderTextColor={theme.placeholder}
                     value={intervaloInput.dataFinal}
                 />
+                <MaterialCommunityIcons name="pencil" size={15} color={theme.placeholder} />
             </View>
             <Text></Text>
         </View>

@@ -65,7 +65,7 @@ export default function Dashboard() {
   // }, [])
 
   const totais = useMemo(() => {
-    function acumulador(intervalo?: IIntervalo, isSaldo = false) {
+    function acumulador(intervalo: IIntervalo) {
       let totalRenda = 0
       let totalDespesa = 0
       let totalInvestimento = 0
@@ -78,7 +78,7 @@ export default function Dashboard() {
           
           const valor = Number(item.value) || 0
           
-          if (!isSaldo && intervalo) {
+          if (intervalo) {
             const [ano, mes, dia] = item.date.split('-').map(Number)
             const [diaI, mesI, anoI] = intervalo.dataInicial.split('-').map(Number)
             const [diaF, mesF, anoF] = intervalo.dataFinal.split('-').map(Number)
@@ -90,12 +90,7 @@ export default function Dashboard() {
               if (categoria.nome === "renda") totalRenda += valor
               if (categoria.nome === "despesa") totalDespesa += valor
               if (categoria.nome === "investimento") totalInvestimento += valor
-
             }
-          }else {
-            if (categoria.nome === "renda") totalRenda += valor
-            if (categoria.nome === "despesa") totalDespesa += valor
-            if (categoria.nome === "investimento") totalInvestimento += valor
           }
       }})
 
@@ -105,7 +100,7 @@ export default function Dashboard() {
     if (!dados.items || !dados.categories) return
     const valores = acumulador(intervalo)
     const saldo = () => {
-      const totais = acumulador(intervalo, true)
+      const totais = acumulador(intervalo)
       return totais.totalRenda - (totais.totalDespesa + totais.totalInvestimento)
     }
     

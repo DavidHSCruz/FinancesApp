@@ -25,18 +25,20 @@ export default function Transacoes() {
   const [selectedTipoID, setSelectedTipoID] = useState(-1)
 
   const totais = useMemo(() => {
-    function acumulador(intervalo?: IIntervalo, isSaldo = false) {
+    function acumulador(intervalo: IIntervalo) {
       let totalRenda = 0
       let totalDespesa = 0
       let totalInvestimento = 0
 
       dados.items.forEach(item => {
-        if (item.tipoID && item.categoryID) {
+        if (!item.categoryID) return
+        if (item.tipoID || item.tipoID === 0) {
           let categoria = dados.categories.find(c => c.id === item.categoryID)
           if (!categoria) return
           
           const valor = Number(item.value) || 0
-          if (!isSaldo && intervalo) {
+          
+          if (intervalo) {
             const [ano, mes, dia] = item.date.split('-').map(Number)
             const [diaI, mesI, anoI] = intervalo.dataInicial.split('-').map(Number)
             const [diaF, mesF, anoF] = intervalo.dataFinal.split('-').map(Number)
@@ -48,13 +50,7 @@ export default function Transacoes() {
               if (categoria.nome === "renda") totalRenda += valor
               if (categoria.nome === "despesa") totalDespesa += valor
               if (categoria.nome === "investimento") totalInvestimento += valor
-
             }
-          }else {
-            if (categoria.nome === "renda") totalRenda += valor
-            if (categoria.nome === "despesa") totalDespesa += valor
-            if (categoria.nome === "investimento") totalInvestimento += valor
-
           }
       }})
       
@@ -64,7 +60,7 @@ export default function Transacoes() {
     if (!dados.items || !dados.categories) return
     const valores = acumulador(intervalo)
     const saldo = () => {
-      const totais = acumulador(intervalo, true)
+      const totais = acumulador(intervalo)
       return totais.totalRenda - (totais.totalDespesa + totais.totalInvestimento)
     }
     
@@ -76,7 +72,6 @@ export default function Transacoes() {
 
     return dados.items
   }, [dados])
-  
 
   return (
     <>
