@@ -55,4 +55,11 @@ Com o **App_Finances**, você acompanha **entradas, despesas** e **investimentos
 **David Henrique da Silva Cruz**
 
 - Desenvolvedor Front-end & Mobile - São José dos Pinhais – PR
-- [GitHub](https://github.com/DavidHSCruz) | [Linkedin](https://www.linkedin.com/in/david-hs-cruz/) | [Instagram](https://www.instagram.com/david.hs.cruz/)
+
+---
+
+## Redes Sociais
+
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/DavidHSCruz)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/david-hs-cruz/)
+[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/david.hs.cruz/)
