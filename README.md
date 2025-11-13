@@ -1,50 +1,58 @@
-# Welcome to your Expo app 👋
+# App_Finances
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo de **controle financeiro pessoal**, desenvolvido para ajudar você a **gerenciar suas finanças de forma prática**.  
+Com o **App_Finances**, você acompanha **entradas, despesas** e **investimentos**, tendo uma visão clara da sua saúde financeira.
 
-## Get started
+---
 
-1. Install dependencies
+## Tecnologias Utilizadas
 
-   ```bash
-   npm install
-   ```
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## Funcionalidades
 
-In the output, you'll find options to open the app in a
+- **Controle de Receitas, Investimentos e Despesas**  
+- **Resumo Financeiro** com saldo atualizado  
+- **Histórico mensal de movimentações**  
+- **Edição e exclusão de lançamentos**  
+- **Tema Dark/Light** *(opcional)*  
+- **Gráficos e estatísticas (em desenvolvimento)**  
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Estrutura do Projeto
 
 ```bash
-npm run reset-project
+├── 📁 __tests__
+├── 📁 app
+│   ├── 📁 (tabs)       # Telas do app
+├── 📁 assets           # Ícones, fontes e imagens
+├── 📁 components       # Componentes reutilizáveis
+├── 📁 constants
+├── 📁 context          # Contexto global
+├── 📁 hooks            # Hooks auxiliares
+├── 📁 styles
+├── 📁 types
+├── 📁 utils
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Conceito do Projeto
 
-To learn more about developing your project with Expo, look at the following resources:
+“Organizar nossas finanças é o primeiro passo para conquistar **liberdade financeira**.”
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+> O App_Finances foi **criado com foco em simplicidade e clareza**, permitindo que qualquer pessoa tenha controle total sobre ganhos, gastos e investimentos em um só lugar.
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## Autor
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**David Henrique da Silva Cruz**
+
+- Desenvolvedor Front-end & Mobile - São José dos Pinhais – PR
+- [GitHub](https://github.com/DavidHSCruz) | [Linkedin](https://www.linkedin.com/in/david-hs-cruz/) | [Instagram](https://www.instagram.com/david.hs.cruz/)
